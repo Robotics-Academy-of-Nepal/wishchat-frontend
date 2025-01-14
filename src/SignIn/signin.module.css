@@ -1,0 +1,108 @@
+.signinContainer{
+    display: block;
+    position: relative;
+    width: 40%;
+    height: 99.9vh;
+    background-color: black;
+    background-repeat: no-repeat;
+    background-size: contain;
+    margin-top: -0.3cm;
+}
+
+.backgroundImage{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-repeat: no-repeat;
+    background-size: cover;
+    object-fit: cover;
+    z-index: 1;
+}
+
+.secondContainer{
+    display: block;
+    position: relative;
+    z-index: 2;
+    width: 60%;
+    height: 16cm;
+    border-radius: 8px;
+    background-color: rgba(255,255,255,0.1);
+    margin-left: 18%;
+    text-align: center;
+    margin-top: 2%;
+    padding-top: 10%;
+    line-height: 1.9;
+    font-size: 25px;
+    font-family: cursive;
+    color: black;
+}
+
+.title{
+    font-family: cursive;
+    font-size: 60px;
+}
+
+.form{
+    border: solid;
+    border-radius: 8px;
+    width: 90%;
+}
+
+.loginButton{
+    display: block;
+    border: solid;
+    border-radius: 12px;
+    background-color: black;
+    color: white;
+    font-family: cursive;
+    font-size: 20px;
+    margin-left: 32%;
+    margin-top: 10%;
+    width: 35%;
+}
+
+.loginButton:hover{
+    box-shadow: 0 12px 16px 0 rgba(0,0,0,0.99), 0 17px 50px 0 rgba(0,0,0,0.98);
+}
+
+.imageContainer{
+    width: 60%;
+    float: right;
+    position: relative;
+    background-color: blanchedalmond;
+    height: 100vh;
+    margin-top: -100vh;
+}
+
+.featureImage{
+    position: absolute;
+    z-index: 1;
+    background-repeat: no-repeat;
+    background-size: cover;
+    object-fit: fill;
+    width: 100%;
+    height: 100%;
+    
+}
+
+.wishchatimage{
+    z-index: 2;
+    position: absolute;
+    background-repeat: no-repeat;
+    object-fit: contain;
+    width: 100%;
+    height: 100%;
+}
+
+.googleButton{
+    position: relative;
+    z-index: 2;
+    width: 50%;
+    margin-left: 21%;
+    margin-top: -100px;
+    border-radius: 5px;
+}
+
+.googleButton:hover{
+    box-shadow: 0 12px 16px 0 rgba(0,0,0,0.99), 0 17px 50px 0 rgba(0,0,0,0.98);
+}

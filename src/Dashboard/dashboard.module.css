@@ -1,0 +1,136 @@
+.logo{
+    width: auto;
+    height: 180px;
+    margin-left: 2%;
+    border-radius: 50%;
+    background-color: rgba(255,255,255,0.1);
+}
+
+.navigation{
+    display: block;
+    float: right;
+    color: rgba(199, 33, 33, 0.774);
+    background-color: rgba(255,255,255,0.1);
+    width: 70%;
+    height: 1.8cm;
+    margin-top: -4.5cm;
+    margin-left: 0;
+}
+
+.headers{
+    display: inline;
+    background-color: rgba(255,255,255,0.1);
+    font-family: cursive;
+    font-size: 30px;
+    margin-left: 8.5%;
+    color: black;
+    font-style: normal;
+}
+
+.rightelement{
+    display: inline;
+    float: right;
+    background-color: rgba(255,255,255,0.1);
+    font-family: cursive;
+    font-size: 30px;
+    margin-left: 8.5%;
+    margin-right: 5%;
+    color: black;
+    font-style: normal;
+}
+
+.headers:hover{
+    opacity: 50%;
+}
+
+.rightelement:hover{
+    opacity: 50%;
+}
+
+.chatbotContainer{
+width: 100%;
+height: 14.0cm;
+background-color: white;
+padding: 2rem;
+}
+
+.chatbotButton{
+    display: block;
+    border: solid;
+    border-color: black;
+    font-family:cursive;
+    font-size: 30px;
+    margin-left: 40%;
+    background-color: rgb(46, 36, 179);
+    color: white;
+    border-radius: 8px;
+}
+
+.chatbotButton:hover{
+    box-shadow: 0 12px 16px 0 rgba(0,0,0,0.99), 0 17px 50px 0 rgba(0,0,0,0.98);
+}
+
+.card{
+    border: 1px solid hsl(0, 0%, 0%);
+    border-radius: 10px;
+    box-shadow: 5px 5px 5px hsla(0, 0%, 0, 0.1);
+    padding: 20px;
+    margin: 10px;
+    text-align: center;
+    max-width: 250px;
+    display: inline-block;
+    position: fixed;
+    height: 250px;
+    width: 200px;
+    margin-left: 40%;
+    background-image: url('../assets/wishchat-logo.png');
+    background-size: cover; 
+    background-repeat: no-repeat; 
+    background-position:top; 
+    background-size: 200px;
+    background-blend-mode:color-burn; 
+  }
+  
+  .cardimage{
+    width: 90%;
+    height: 90%;
+    border-radius: 1%;
+    margin-bottom: 10px;
+    background-color: rgba(255,255,255,0.1);
+    margin-left: 5px;
+  }
+  
+  .cardtitle{
+    font-family: cursive;
+    font-size: 40px;
+    margin: 0;
+    color: aqua;
+  }
+  
+  .cardtext{
+    font-family: cursive;
+    font-size: 25px;
+    color:aquamarine;
+  }
+
+  .card:hover{
+    box-shadow: 0 12px 16px 0 rgba(0,0,0,0.99), 0 17px 50px 0 rgba(0,0,0,0.98);
+    width: 210px;
+    height: 260px;
+  }
+
+.companyname{
+  margin-top: 150%;
+  font-family: cursive;
+  font-size: 20px;
+  font-weight: bolder;
+}
+
+.profile{
+  float: right;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  margin-top: -4.5cm;
+  margin-right: 2%;
+}

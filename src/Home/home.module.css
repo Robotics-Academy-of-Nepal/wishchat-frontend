@@ -1,0 +1,136 @@
+.logo{
+    width: auto;
+    height: 180px;
+    margin-left: 2%;
+    border-radius: 50%;
+}
+
+.navigation{
+    display: block;
+    float: right;
+    color: rgba(199, 33, 33, 0.774);
+    background-color: rgba(255,255,255,0.1);
+    width: 70%;
+    height: 1.8cm;
+    margin-top: -4.5cm;
+    margin-left: 0;
+}
+
+.headers{
+    display: inline;
+    background-color: rgba(255,255,255,0.1);
+    font-family: cursive;
+    font-size: 30px;
+    margin-left: 8.5%;
+    color: black;
+    font-style: normal;
+}
+
+.rightelement{
+    display: inline;
+    float: right;
+    background-color: rgba(255,255,255,0.1);
+    font-family: cursive;
+    font-size: 30px;
+    margin-left: 8.5%;
+    margin-right: 5%;
+    color: black;
+    font-style: normal;
+}
+
+.headers:hover {
+    color: #007bff;
+    transition: color 0.3s ease;
+}
+
+.rightelement:hover{
+    opacity: 50%;
+}
+
+.leftContainers{
+    width: 49.8%;
+    height: 14.4cm;
+    background-color: rgba(255,255,255,0.1);
+    padding: 2rem;
+}
+
+.rightContainers{
+    width: 58%;
+    height: 14.4cm;
+    background-color: rgba(255,255,255,0.1);
+    float: right;
+    margin-top: -14.4cm;
+    display: flex; /* Use flexbox for centering */
+    justify-content: center; /* Horizontally center the video */
+    align-items: center;
+}
+
+.video {
+    width: 98%; /* Make the video take the full width of the container */
+    height: 100%; /* Make the video take the full height of the container */
+    object-fit: cover; /* Ensure the video covers the container without distortion */
+    border: solid;
+    border-radius: 8px; 
+    border-color: rgba(255,255,255,0.1);
+}
+
+.greetings {
+    font-family: cursive;
+    font-size: 40px;
+    font-weight: bold;
+    padding-top: 2cm;
+    white-space: nowrap;
+    overflow: hidden;
+    width: 0;
+    animation: typing 3s steps(22) forwards;
+}
+
+.subheading {
+    font-family: Arial, sans-serif;
+    font-size: 20px;
+    margin-top: 20px;
+    white-space: nowrap;
+    overflow: hidden;
+    width: 0;
+    opacity: 0;
+    animation: 
+        fadeIn 0.1s linear 3s forwards,
+        typing 4s steps(50) 3s forwards;
+}
+
+.getStartedButton {
+    opacity: 0;
+    margin-top: 2rem;
+    padding: 0.75rem 1.5rem;
+    font-size: 1.2rem;
+    background-color: #0c0c0c;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.1s;
+    animation: fadeIn 0.3s ease-in 6.5s forwards;
+}
+
+.getStartedButton:hover {
+    background-color: #becac4;
+}
+
+@keyframes typing {
+    to {
+        width: 100%;
+    }
+}
+
+@keyframes fadeIn {
+    to {
+        opacity: 1;
+    }
+}
+
+.profile {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+}

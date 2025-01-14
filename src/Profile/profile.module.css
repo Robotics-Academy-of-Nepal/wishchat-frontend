@@ -1,0 +1,19 @@
+.profileContainer{
+    display: flex;
+    min-height: 729px;
+    /* border: 8px solid black; */
+    flex-direction: column;
+    align-items: center;
+
+}
+
+.pictureContainer{
+    border-radius: 50%;
+    width: 200px;
+    height: 200px;
+}
+
+.textContainer{
+    font-family: cursive;
+    font-size: 45px;
+}
