@@ -1,0 +1,30 @@
+/* Tailwind-based Styles */
+
+<!-- Remove custom CSS classes replaced with Tailwind below -->
+.card {
+  @apply border border-black rounded-lg shadow-md p-5 m-2 text-center max-w-[250px] inline-block fixed h-[250px] w-[200px] ml-[40%] bg-cover bg-no-repeat bg-top bg-blend-color-burn;
+}
+
+.cardimage {
+  @apply w-[90%] h-[90%] rounded-md mb-2 bg-opacity-10 ml-1;
+}
+
+.cardtitle {
+  @apply text-4xl font-cursive text-aqua;
+}
+
+.cardtext {
+  @apply text-2xl font-cursive text-aquamarine;
+}
+
+.card:hover {
+  @apply shadow-xl w-[210px] h-[260px];
+}
+
+.companyname {
+  @apply mt-[150%] font-cursive text-xl font-extrabold;
+}
+
+.profile {
+  @apply float-right w-15 h-15 rounded-full mt-[-4.5cm] mr-2;
+}

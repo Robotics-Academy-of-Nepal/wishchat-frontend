@@ -1,213 +1,139 @@
-import styles from './playground.module.css';
-import goodwishLogo from '../assets/wishchat-logo.png';
-import { useNavigate } from 'react-router-dom';
-import { useState, useEffect, useRef } from 'react';
+import { useState } from 'react';
+import Navbar from '../Components/Navbar/Navbar';
 
+export default function Playground() {
+  const [messages, setMessages] = useState([]);
+  const [input, setInput] = useState('');
+  const [systemPrompt, setSystemPrompt] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
-function Playground(){
+  const handleSendMessage = async () => {
+    const token = localStorage.getItem('token');
 
-    const navigate = useNavigate();
-    const [messages, setMessages] = useState([]);
-    const [inputText, setInputText] = useState('');
-    const [systemPrompt, setSystemPrompt] = useState('');
-    const [activePrompt, setActivePrompt] = useState('');
-    const [showWarning, setShowWarning] = useState(false);
-    const chatContainerRef = useRef(null);
+    if (input.trim()) {
+      const userMessage = { text: input, sender: 'user' };
+      setMessages((prevMessages) => [...prevMessages, userMessage]);
+      setInput('');
 
+      try {
+        setIsLoading(true);
+        const response = await fetch('https://wishchat.goodwish.com.np/api/query/', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Token ${token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ query: input }),
+        });
 
-    const pic = localStorage.getItem("Picture")
+        const data = await response.json();
+        setMessages((prevMessages) => [
+          ...prevMessages,
+          { text: data.reply, sender: 'bot' },
+        ]);
+      } catch (error) {
+        setMessages((prevMessages) => [
+          ...prevMessages,
+          { text: 'Error fetching response. Please try again.', sender: 'bot' },
+        ]);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+  };
 
+  const handleApplySystemPrompt = async () => {
+    const token = localStorage.getItem('token');
+    if (systemPrompt.trim()) {
+      try {
+        const response = await fetch('https://wishchat.goodwish.com.np/api/apply-changes/', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Token ${token}`,
+          },
+          body: JSON.stringify({ prompt: systemPrompt }),
+        });
 
-    useEffect(() => {
-        if (chatContainerRef.current) {
-            chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
-        }
-    }, [messages]);
+        const data = await response.json();
+        alert(data.message || 'System prompt updated successfully!');
+      } catch (error) {
+        alert('Error updating system prompt. Please try again.');
+      }
+    }
+  };
 
-    const handlePromptChange = (e) => {
-        setSystemPrompt(e.target.value);
-        setShowWarning(true);
-    };
-
-    const handleApplyChanges = async() => {
-        setActivePrompt(systemPrompt);
-        setShowWarning(false);
-
-        const token = localStorage.getItem('token');
-        if (!token) {
-            console.error('No token found');
-            return;
-        }
-        try {
-            const response = await fetch('https://wishchat.goodwish.com.np/api/apply-changes/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Token ${token}`
-                },
-                body: JSON.stringify({ 
-                    prompt: systemPrompt,
-                })
-            });
-
-            if (!response.ok) {
-                throw new Error('API request failed');
-            }
-
-            const data = await response.json();
-
-        } catch (error) {
-            console.error('Error:', error);
-            setMessages(prev => [...prev, {
-                text: "Sorry, I couldn't process your request.",
-                isUser: false,
-                timestamp: new Date()
-            }]);
-        }
-        
-
-
-    };
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        if (!inputText.trim()) return;
-
-        const token = localStorage.getItem('token');
-        if (!token) {
-            console.error('No token found');
-            return;
-        }
-
-        // Add user message
-        setMessages(prev => [...prev, {
-            text: inputText,
-            isUser: true,
-            timestamp: new Date()
-        }]);
-
-        const currentInput = inputText;
-        setInputText('');
-
-        try {
-            const response = await fetch('https://wishchat.goodwish.com.np/api/query/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Token ${token}`
-                },
-                body: JSON.stringify({ 
-                    query: currentInput,
-                })
-            });
-
-            if (!response.ok) {
-                throw new Error('API request failed');
-            }
-
-            const data = await response.json();
-            
-            setMessages(prev => [...prev, {
-                text: data.response,
-                isUser: false,
-                timestamp: new Date()
-            }]);
-
-        } catch (error) {
-            console.error('Error:', error);
-            setMessages(prev => [...prev, {
-                text: "Sorry, I couldn't process your request.",
-                isUser: false,
-                timestamp: new Date()
-            }]);
-        }
-    };
-
-    const handleClearChat = () => {
-        setMessages([]);
-    };
-
-    return(
-        <>
-        <img className={styles.logo} src={goodwishLogo} alt="Logo image" onClick={() => navigate('/home')} style={{ cursor: 'pointer' }} />
-        <div>
-        <nav className={styles.navigation}>
-            <ul>
-                <li className={styles.headers} onClick={() => navigate('/dashboard')} style={{ cursor: 'pointer' }}>
-                    Chatbot
-                </li>
-                <li className={styles.headers} onClick={() => navigate('/playground')} style={{ cursor: 'pointer' }}>
-                    Playground
-                </li>
-                <li className={styles.headers} onClick={() => navigate('/deploy')} style={{ cursor: 'pointer' }}>
-                    Deploy
-                </li>
-                <li className={styles.headers} onClick={() => navigate('/upload')} style={{ cursor: 'pointer' }}>
-                    Build
-                </li>
-            </ul>
-        </nav>
-        <img className={styles.profile} src={pic} alt="Logo image" onClick={() => navigate('/profile')} style={{ cursor: 'pointer' }} />
-        </div>
-
-        <div className={styles.clearChatContainer}>
-            <button 
-                className={styles.clearButton} 
-                onClick={handleClearChat}
-                title="Clear chat"
+  return (
+    <>
+      <Navbar />
+      <div className="flex flex-col items-center justify-start px-6 pt-5 pb-8 bg-gray-100 min-h-auto">
+        <div className="grid w-full max-w-6xl grid-cols-1 gap-8 lg:grid-cols-2">
+          {/* System Prompt Section */}
+          <div className="flex flex-col items-start p-6 bg-white border border-gray-300 rounded-lg shadow-lg">
+            <h1 className="mb-4 text-xl font-semibold text-gray-800">System Prompt</h1>
+            <textarea
+              value={systemPrompt}
+              onChange={(e) => setSystemPrompt(e.target.value)}
+              placeholder="Enter system prompt here..."
+              className="w-full h-40 p-4 mb-4 border border-gray-300 rounded-lg shadow-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            ></textarea>
+            <button
+              onClick={handleApplySystemPrompt}
+              className="w-full px-6 py-3 text-white bg-blue-600 rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
-                🧹
+              Apply Changes
             </button>
-        </div>
-        
-        <div className={styles.playgroundContainer}>
-            
-            <div className={styles.messagesContainer} ref={chatContainerRef}>
-                {messages.map((msg, index) => (
-                    <div 
-                        key={index} 
-                        className={msg.isUser ? styles.userMessage : styles.botMessage}
-                    >
-                        {msg.text}
-                    </div>
-                ))}
-            </div>
+          </div>
 
-            <form className={styles.inputContainer} onSubmit={handleSubmit}>
-                <input
-                    type='text'
-                    value={inputText}
-                    onChange={(e) => setInputText(e.target.value)}
-                    placeholder='Type your message here....'
-                    className={styles.messageInput}
-                />
-                <button type='submit' className={styles.sendButton}>
-                    Send
-                </button>
-            </form>
-        </div>
-        <div className={styles.sliderContainer}>
-                <h3 className={styles.promptTitle}>System Prompt</h3>
-                <textarea
-                    className={styles.promptInput}
-                    value={systemPrompt}
-                    onChange={handlePromptChange}
-                    placeholder="Enter system prompt..."
-                />
-                <button 
-                    className={styles.applyButton}
-                    onClick={handleApplyChanges}
+          {/* Chat Section */}
+          <div className="flex flex-col h-[630px] bg-white border border-gray-300 rounded-lg shadow-lg">
+            <div className="flex-1 p-4 space-y-4 overflow-y-auto rounded-t-lg bg-gray-50">
+              {messages.map((msg, index) => (
+                <div
+                  key={index}
+                  className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
                 >
-                    Apply Changes
-                </button>
-                {showWarning && (
-                    <div className={styles.warningAlert}>
-                        Please click "Apply Changes" for the new prompt to take effect
-                    </div>
-                )}
+                  <div
+                    className={`max-w-lg p-4 rounded-lg shadow-md transition-transform transform hover:scale-105 ${
+                      msg.sender === 'user'
+                        ? 'bg-blue-600 text-white'
+                        : 'bg-gray-200 text-gray-900'
+                    }`}
+                  >
+                    {msg.text}
+                  </div>
+                </div>
+              ))}
+              {isLoading && (
+                <div className="text-gray-500 animate-pulse">Bot is typing...</div>
+              )}
             </div>
-        </>
-    );
-}
 
-export default Playground;
+            <div className="flex items-center p-4 bg-white border-t border-gray-300 rounded-b-lg">
+            <input
+  type="text"
+  value={input}
+  onChange={(e) => setInput(e.target.value)}
+  onKeyDown={(e) => {
+    if (e.key === 'Enter' && !isLoading) {
+      handleSendMessage();
+    }
+  }}
+  className="flex-1 p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+  placeholder="Type a message..."
+/>
+
+              <button
+                onClick={handleSendMessage}
+                className="px-6 py-3 ml-4 text-white bg-blue-600 rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                disabled={isLoading}
+              >
+                {isLoading ? 'Sending...' : 'Send'}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}
