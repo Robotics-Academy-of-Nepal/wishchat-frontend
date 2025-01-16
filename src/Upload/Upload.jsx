@@ -1,18 +1,19 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, FileIcon, Trash2, X } from 'lucide-react';
-import styles from './upload.module.css';
+import { Plus, Trash2 } from 'lucide-react';
+import Navbar from '../Components/Navbar/Navbar';
+import TextUpload from './Textupload';
+import QNA from './QNA';
 import goodwishLogo from '../assets/wishchat-logo.png';
 
 const Upload = () => {
   const navigate = useNavigate();
+  const [activeSection, setActiveSection] = useState('uploadFiles');
   const [trainedFiles, setTrainedFiles] = useState([]);
   const [uploadedFile, setUploadedFile] = useState(null);
   const [isTraining, setIsTraining] = useState(false);
   const [progress, setProgress] = useState(0);
-  const [existingFile, setExistingFile] = useState(localStorage.getItem("filename") || null);
-
-  const pic = localStorage.getItem("Picture");
+  const [existingFile, setExistingFile] = useState(localStorage.getItem('filename') || null);
 
   const handleDeleteExistingFile = async () => {
     try {
@@ -20,13 +21,13 @@ const Upload = () => {
       const response = await fetch('https://wishchat.goodwish.com.np/api/delete/', {
         method: 'DELETE',
         headers: {
-          'Authorization': `Token ${token}`,
-        }
+          Authorization: `Token ${token}`,
+        },
       });
 
       if (response.status === 204) {
-        localStorage.setItem("has_active_chatbot", JSON.stringify(false));
-        localStorage.setItem("filename","");
+        localStorage.setItem('has_active_chatbot', JSON.stringify(false));
+        localStorage.setItem('filename', '');
         setExistingFile(null);
         setTrainedFiles([]);
         setUploadedFile(null);
@@ -41,24 +42,20 @@ const Upload = () => {
   const handleFileUpload = (event) => {
     const file = event.target.files[0];
     if (file) {
-      setUploadedFile({
-        file: file,
+      const fileData = {
+        file,
         name: file.name,
-        date: new Date().toISOString().split('T')[0]
-      });
-      
-      setTrainedFiles([{
-        file: file,
-        name: file.name,
-        date: new Date().toISOString().split('T')[0]
-      }]);
+        date: new Date().toISOString().split('T')[0],
+      };
+      setUploadedFile(fileData);
+      setTrainedFiles([fileData]);
     }
   };
 
   const simulateProgress = () => {
     setProgress(0);
     const interval = setInterval(() => {
-      setProgress(prev => {
+      setProgress((prev) => {
         if (prev >= 100) {
           clearInterval(interval);
           return 100;
@@ -90,38 +87,28 @@ const Upload = () => {
       const response = await fetch('https://wishchat.goodwish.com.np/api/upload/', {
         method: 'POST',
         headers: {
-          'Authorization': `Token ${token}`,
+          Authorization: `Token ${token}`,
         },
-        body: formData
+        body: formData,
       });
 
-      if (response.status === 200) {
-        const uploadedFilename = trainedFiles[0]?.name || null; // Get the first file's name
+      if (response.ok) {
+        const uploadedFilename = trainedFiles[0]?.name || null;
         if (uploadedFilename) {
-          localStorage.setItem("filename", uploadedFilename);
+          localStorage.setItem('filename', uploadedFilename);
         }
-
-        localStorage.setItem("has_active_chatbot", JSON.stringify(true));
-        console.log("Uploaded filename stored in localStorage:", uploadedFilename);
-
+        localStorage.setItem('has_active_chatbot', JSON.stringify(true));
         navigate('/playground');
-
-
-      }
-
-      if (!response.ok) {
+      } else {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      const data = await response.json();
       clearInterval(progressInterval);
       setProgress(100);
-      
       setTimeout(() => {
         setIsTraining(false);
         setProgress(0);
       }, 1000);
-
     } catch (error) {
       console.error('Error uploading files:', error);
       setIsTraining(false);
@@ -131,101 +118,98 @@ const Upload = () => {
 
   return (
     <>
-      {/* Navigation section remains the same */}
-      <img className={styles.logo} src={goodwishLogo} alt="Logo image" onClick={() => navigate('/home')} style={{ cursor: 'pointer' }} />
-      <div>
-        <nav className={styles.navigation}>
-          <ul>
-            <li className={styles.headers} onClick={() => navigate('/dashboard')} style={{ cursor: 'pointer' }}>
-                Chatbot
+      <Navbar />
+      <div className="flex flex-col min-h-screen bg-gray-100 md:flex-row">
+        {/* Sidebar */}
+        <div className="w-full bg-white shadow-lg md:w-64">
+          <ul className="flex justify-around p-4 space-y-2 md:flex-col md:justify-start">
+            <li
+              className={`cursor-pointer p-3 rounded-lg text-center text-lg ${
+                activeSection === 'uploadFiles'
+                  ? 'bg-blue-500 text-white'
+                  : 'text-gray-700 hover:bg-gray-100'
+              }`}
+              onClick={() => setActiveSection('uploadFiles')}
+            >
+              Upload Files
             </li>
-            <li className={styles.headers} onClick={() => navigate('/playground')} style={{ cursor: 'pointer' }}>
-                Playground
+            <li
+              className={`cursor-pointer p-3 rounded-lg text-center text-lg ${
+                activeSection === 'qna'
+                  ? 'bg-blue-500 text-white'
+                  : 'text-gray-700 hover:bg-gray-100'
+              }`}
+              onClick={() => setActiveSection('qna')}
+            >
+              Q&A
             </li>
-            <li className={styles.headers} onClick={() => navigate('/deploy')} style={{ cursor: 'pointer' }}>
-                Deploy
-            </li>
-            <li className={styles.headers} onClick={() => navigate('/upload')} style={{ cursor: 'pointer' }}>
-                Build
+            <li
+              className={`cursor-pointer p-3 rounded-lg text-center text-lg ${
+                activeSection === 'textUpload'
+                  ? 'bg-blue-500 text-white'
+                  : 'text-gray-700 hover:bg-gray-100'
+              }`}
+              onClick={() => setActiveSection('textUpload')}
+            >
+              Text
             </li>
           </ul>
-        </nav>
-      </div>
-      <img className={styles.profile} src={pic} alt="Logo image" onClick={() => navigate('/profile')} style={{ cursor: 'pointer' }} />
+        </div>
 
-      <div className={styles.uploadSection}>
-        <div className={styles.verticalBar}>
-          <ul className={styles.verticalContent}>
-            <li className={styles.content}>Upload Files</li>
-            <li className={styles.content}>Q&A</li>
-            <li className={styles.content}>Text</li>
-          </ul>
-        </div>
-        <div className={styles.uploadFile}>
-          <input
-            type="file"
-            className={styles.fileInput}
-            accept=".pdf,.doc,.docx,.txt"
-            onChange={handleFileUpload}
-            disabled={existingFile}
-          />
-          <div className={styles.uploadLabel}>
-            <Plus className={styles.plusIcon} />
-            <p className={styles.uploadText}>
-              Click anywhere to upload files<br />
-              (PDF, DOC, DOCX, or TXT)
-            </p>
-          </div>
-        </div>
-      </div>
-      
-      <div className={styles.trainingSection}>
-        <div className={styles.existingFileBox}>
-          {existingFile ? (
-            <div className={styles.fileEntry}>
-              <FileIcon size={24} color="#4F46E5"/>
-              <span className={styles.fileName}>{existingFile}</span>
-              <Trash2 
-                className={styles.deleteIcon}
-                size={20}
-                onClick={handleDeleteExistingFile}
+        {/* Content Area */}
+        <div className="flex-1 p-4">
+          {activeSection === 'uploadFiles' && (
+            <div className="flex flex-col items-center">
+              <label
+                htmlFor="file-upload"
+                className="flex flex-col items-center justify-center w-full max-w-lg p-6 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100"
+              >
+                <Plus className="w-8 h-8 text-blue-500" />
+                <p className="mt-2 text-center text-gray-600">
+                  Click to upload files<br />
+                  (PDF, DOC, DOCX, or TXT)
+                </p>
+              </label>
+              <input
+                id="file-upload"
+                type="file"
+                className="hidden"
+                accept=".pdf,.doc,.docx,.txt"
+                onChange={handleFileUpload}
+                disabled={existingFile}
               />
+              {uploadedFile && (
+                <div className="p-4 mt-4 bg-white rounded-lg shadow-md">
+                  <p className="text-gray-700">
+                    Uploaded: <span className="font-medium">{uploadedFile.name}</span>
+                  </p>
+                </div>
+              )}
+              <button
+                className="px-4 py-2 mt-4 text-white bg-blue-500 rounded-lg hover:bg-blue-600"
+                onClick={handleTrainChatbot}
+                disabled={existingFile || trainedFiles.length === 0 || isTraining}
+              >
+                {isTraining ? 'Training in Progress...' : 'Train Chatbot'}
+              </button>
+              {isTraining && (
+                <div className="w-full max-w-lg mt-4">
+                  <div className="relative h-4 bg-gray-200 rounded">
+                    <div
+                      className="absolute top-0 left-0 h-4 bg-blue-500 rounded"
+                      style={{ width: `${progress}%` }}
+                    />
+                  </div>
+                  <p className="mt-2 text-center text-gray-700">Training Progress: {progress}%</p>
+                </div>
+              )}
             </div>
-          ) : trainedFiles.length > 0 ? (
-            trainedFiles.map((file, index) => (
-              <div key={index} className={styles.fileEntry}>
-                <FileIcon size={24} color="#4F46E5"/>
-                <span className={styles.fileName}>
-                  {file.name} (Uploaded on {file.date})
-                </span>
-              </div>
-            ))
-          ) : (
-            <p className={styles.fileName}>No files uploaded yet</p>
           )}
+
+          {activeSection === 'qna' && <QNA />}
+
+          {activeSection === 'textUpload' && <TextUpload />}
         </div>
-        
-        <button 
-          className={styles.trainButton}
-          onClick={handleTrainChatbot}
-          disabled={existingFile || trainedFiles.length === 0 || isTraining}
-        >
-          {isTraining ? 'Training in Progress...' : 'Train Chatbot'}
-        </button>
-        
-        {isTraining && (
-          <>
-            <div className={styles.progressBarContainer}>
-              <div 
-                className={styles.progressBar} 
-                style={{ width: `${progress}%` }}
-              />
-            </div>
-            <p className={styles.trainingStatus}>
-              Training Progress: {progress}%
-            </p>
-          </>
-        )}
       </div>
     </>
   );
