@@ -40,7 +40,7 @@ function Home() {
         try {
             const token = localStorage.getItem('token');
             // Make API call to logout endpoint
-            await axios.post('https://wishchat.goodwish.com.np/auth/logout/', {}, {
+            await axios.post('http://192.168.1.38:8000/auth/logout/', {}, {
                 headers: {
                     'Authorization': `Token ${token}`
                 }
@@ -74,7 +74,7 @@ function Home() {
           >
   <div className="flex flex-col items-start justify-center space-y-4 ">
     <p className="text-2xl font-bold text-center md:text-left"
-       style={{ fontFamily: 'cursive' }}>
+        style={{ fontFamily: 'Helvetica' }}>
       Welcome to WishChat
     </p>
     <p className="text-lg font-semibold text-center md:text-left">
@@ -83,7 +83,7 @@ function Home() {
     <button 
       className="px-6 py-2 text-white transition bg-blue-500 rounded-md shadow-md hover:bg-blue-600"
       
-      style={{ fontFamily: 'cursive' }}onClick={handleGetStarted}
+       style={{ fontFamily: 'Helvetica' }}onClick={handleGetStarted}
     >
       {isAuthenticated ? 'Go to Dashboard →' : 'Get Started →'}
     </button>

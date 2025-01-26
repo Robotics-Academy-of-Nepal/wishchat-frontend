@@ -7,6 +7,7 @@ import { useState } from 'react';
 function SignIn() {
     const navigate = useNavigate();
     const [message, setMessage] = useState('');
+  
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -98,7 +99,7 @@ function SignIn() {
                     <GoogleLogin
                         onSuccess={(credentialResponse) => {
                             axios
-                                .post("https://wishchat.goodwish.com.np/auth/google-login/", {
+                                .post("http://192.168.1.3:8000/auth/google-login/", {
                                     auth_token: credentialResponse.credential,
                                 })
                                 .then((response) => {

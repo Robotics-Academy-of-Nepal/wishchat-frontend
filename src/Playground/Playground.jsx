@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import Navbar from '../Components/Navbar/Navbar';
+import { data } from 'react-router-dom';
 
 export default function Playground() {
   const [messages, setMessages] = useState([]);
@@ -17,19 +18,23 @@ export default function Playground() {
 
       try {
         setIsLoading(true);
-        const response = await fetch('https://wishchat.goodwish.com.np/api/query/', {
+        const response = await fetch('http://192.168.1.38:8000/api/query/', {
           method: 'POST',
           headers: {
             'Authorization': `Token ${token}`,
             'Content-Type': 'application/json',
+
           },
           body: JSON.stringify({ query: input }),
         });
+      
+
 
         const data = await response.json();
+        console.log(data.response);
         setMessages((prevMessages) => [
           ...prevMessages,
-          { text: data.reply, sender: 'bot' },
+          { text: data.response, sender: 'bot' },
         ]);
       } catch (error) {
         setMessages((prevMessages) => [
@@ -42,11 +47,12 @@ export default function Playground() {
     }
   };
 
+
   const handleApplySystemPrompt = async () => {
     const token = localStorage.getItem('token');
     if (systemPrompt.trim()) {
       try {
-        const response = await fetch('https://wishchat.goodwish.com.np/api/apply-changes/', {
+        const response = await fetch('http://192.168.1.38:8000///api/apply-changes/', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -69,7 +75,7 @@ export default function Playground() {
       <div className="flex flex-col items-center justify-start px-6 pt-5 pb-8 bg-gray-100 min-h-auto">
         <div className="grid w-full max-w-6xl grid-cols-1 gap-8 lg:grid-cols-2">
           {/* System Prompt Section */}
-          <div className="flex flex-col items-start p-6 bg-white border border-gray-300 rounded-lg shadow-lg">
+          <div className="flex flex-col items-start p-6 bg-white border border-gray-300 shadow-xl shadow-gray-500 rounded-xl">
             <h1 className="mb-4 text-xl font-semibold text-gray-800">System Prompt</h1>
             <textarea
               value={systemPrompt}
@@ -86,7 +92,7 @@ export default function Playground() {
           </div>
 
           {/* Chat Section */}
-          <div className="flex flex-col h-[630px] bg-white border border-gray-300 rounded-lg shadow-lg">
+          <div className="flex flex-col h-[630px] bg-white border border-gray-300 rounded-xl shadow-xl shadow-gray-500">
             <div className="flex-1 p-4 space-y-4 overflow-y-auto rounded-t-lg bg-gray-50">
               {messages.map((msg, index) => (
                 <div
@@ -94,7 +100,7 @@ export default function Playground() {
                   className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
                 >
                   <div
-                    className={`max-w-lg p-4 rounded-lg shadow-md transition-transform transform hover:scale-105 ${
+                    className={`max-w-lg p-4 rounded-lg shadow-md transition-transform transform  ${
                       msg.sender === 'user'
                         ? 'bg-blue-600 text-white'
                         : 'bg-gray-200 text-gray-900'
@@ -112,6 +118,7 @@ export default function Playground() {
             <div className="flex items-center p-4 bg-white border-t border-gray-300 rounded-b-lg">
             <input
   type="text"
+  cl
   value={input}
   onChange={(e) => setInput(e.target.value)}
   onKeyDown={(e) => {
@@ -119,13 +126,13 @@ export default function Playground() {
       handleSendMessage();
     }
   }}
-  className="flex-1 p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+  className="flex-1 p-3 border-2 border-gray-400 border-solid rounded-lg focus:outline-none "
   placeholder="Type a message..."
 />
 
               <button
                 onClick={handleSendMessage}
-                className="px-6 py-3 ml-4 text-white bg-blue-600 rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="px-6 py-3 ml-4 text-white bg-blue-600 rounded-lg shadow-md shadow-black hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 disabled={isLoading}
               >
                 {isLoading ? 'Sending...' : 'Send'}

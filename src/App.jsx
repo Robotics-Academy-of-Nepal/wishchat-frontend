@@ -12,7 +12,12 @@ import Deploy from './Deploy/Deploy';
 import Tutorials from './Components/Tutorials/Tutorials';
 import Features from './Components/Features/Features';
 import Pricing from './Components/Pricing/Pricing';
-
+import ChatBubble from './Deploy/ChatBubble';
+import Uploted from './Upload/Uploted';
+import Whatshapp from './Deploy/Whatshapp';
+import WhatsappOutput from './Deploy/WhatsappOutput';
+import Test from './Test';
+import Website from './Deploy/Website';
 function App() {
   return (
     <GoogleOAuthProvider clientId="675550706414-4n7nop63elgh5a5bbiovb47p7v5ml0ia.apps.googleusercontent.com">
@@ -27,7 +32,7 @@ function MainLayout() {
   const location = useLocation();
 
   // Define routes where MainNav should not appear
-  const noNavRoutes = ['/dashboard', '/playground', '/deploy', '/upload'];
+  const noNavRoutes = ['/dashboard', '/playground', '/deploy', '/upload','/uploaded'];
 
   return (
     <>
@@ -47,6 +52,14 @@ function MainLayout() {
         <Route path='/tutorials' element={<Tutorials />} />
         <Route path='/features' element={<Features />} />
         <Route path='/pricing' element={<Pricing />} />
+        <Route path='/chat' element={<ChatBubble />} />
+        <Route path='/uploaded' element={<Uploted />} />
+        <Route path='/whatsapp' element={<Whatshapp />} />
+        <Route path='/woutput' element={<WhatsappOutput />} />
+        <Route path='/test' element={<Test />} />
+        <Route path='/web' element={<Website />} />
+
+
 
       </Routes>
     </>

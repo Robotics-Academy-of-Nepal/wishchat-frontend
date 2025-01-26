@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Trash2 } from 'lucide-react';
+import { Plus, FileIcon, Trash2 } from 'lucide-react';
 import Navbar from '../Components/Navbar/Navbar';
-import TextUpload from './Textupload';
 import QNA from './QNA';
-import goodwishLogo from '../assets/wishchat-logo.png';
+import TextUpload from './Textupload';
+import Uploaded from './Uploted';
+import styles from './upload.module.css';
 
 const Upload = () => {
   const navigate = useNavigate();
@@ -15,10 +16,25 @@ const Upload = () => {
   const [progress, setProgress] = useState(0);
   const [existingFile, setExistingFile] = useState(localStorage.getItem('filename') || null);
 
+  // Handle file upload
+  const handleFileUpload = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const fileData = {
+        file,
+        name: file.name,
+        date: new Date().toISOString().split('T')[0],
+      };
+      setUploadedFile(fileData);
+      setTrainedFiles([fileData]);
+    }
+  };
+
+  // Handle file deletion
   const handleDeleteExistingFile = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('https://wishchat.goodwish.com.np/api/delete/', {
+      const response = await fetch('http://192.168.1.38:8000/api/delete/', {
         method: 'DELETE',
         headers: {
           Authorization: `Token ${token}`,
@@ -39,19 +55,7 @@ const Upload = () => {
     }
   };
 
-  const handleFileUpload = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      const fileData = {
-        file,
-        name: file.name,
-        date: new Date().toISOString().split('T')[0],
-      };
-      setUploadedFile(fileData);
-      setTrainedFiles([fileData]);
-    }
-  };
-
+  // Simulate the training progress
   const simulateProgress = () => {
     setProgress(0);
     const interval = setInterval(() => {
@@ -66,6 +70,7 @@ const Upload = () => {
     return interval;
   };
 
+  // Handle training the chatbot
   const handleTrainChatbot = async () => {
     if (existingFile) return;
 
@@ -84,7 +89,7 @@ const Upload = () => {
         formData.append('filename', fileObj.name);
       });
 
-      const response = await fetch('https://wishchat.goodwish.com.np/api/upload/', {
+      const response = await fetch('http://192.168.1.38:8000/api/upload/', {
         method: 'POST',
         headers: {
           Authorization: `Token ${token}`,
@@ -117,41 +122,40 @@ const Upload = () => {
   };
 
   return (
-    <>
+    <div    style={{ fontFamily: "Georgia" }}>
       <Navbar />
+      <div className='flex items-center justify-center gap-1'>
+      <p className='text-black '>Note:</p>
+        <p className='text-red-500 '>You can upload only one file at a time. If you need to add another file, you must delete the uploaded file first.</p>
+      </div>
+      
       <div className="flex flex-col min-h-screen bg-gray-100 md:flex-row">
         {/* Sidebar */}
         <div className="w-full bg-white shadow-lg md:w-64">
           <ul className="flex justify-around p-4 space-y-2 md:flex-col md:justify-start">
             <li
-              className={`cursor-pointer p-3 rounded-lg text-center text-lg ${
-                activeSection === 'uploadFiles'
-                  ? 'bg-blue-500 text-white'
-                  : 'text-gray-700 hover:bg-gray-100'
-              }`}
+              className={`cursor-pointer p-3 rounded-lg text-center text-lg ${activeSection === 'uploadFiles' ? 'bg-blue-500 text-white' : 'text-gray-700 hover:bg-gray-100'}`}
               onClick={() => setActiveSection('uploadFiles')}
             >
               Upload Files
             </li>
             <li
-              className={`cursor-pointer p-3 rounded-lg text-center text-lg ${
-                activeSection === 'qna'
-                  ? 'bg-blue-500 text-white'
-                  : 'text-gray-700 hover:bg-gray-100'
-              }`}
+              className={`cursor-pointer p-3 rounded-lg text-center text-lg ${activeSection === 'qna' ? 'bg-blue-500 text-white' : 'text-gray-700 hover:bg-gray-100'}`}
               onClick={() => setActiveSection('qna')}
             >
               Q&A
             </li>
             <li
-              className={`cursor-pointer p-3 rounded-lg text-center text-lg ${
-                activeSection === 'textUpload'
-                  ? 'bg-blue-500 text-white'
-                  : 'text-gray-700 hover:bg-gray-100'
-              }`}
+              className={`cursor-pointer p-3 rounded-lg text-center text-lg ${activeSection === 'textUpload' ? 'bg-blue-500 text-white' : 'text-gray-700 hover:bg-gray-100'}`}
               onClick={() => setActiveSection('textUpload')}
             >
               Text
+            </li>
+            <li
+              className={`cursor-pointer p-3 rounded-lg text-center text-lg ${activeSection === 'uploaded' ? 'bg-blue-500 text-white' : 'text-gray-700 hover:bg-gray-100'}`}
+              onClick={() => setActiveSection('uploaded')}
+            >
+              uploaded
             </li>
           </ul>
         </div>
@@ -178,10 +182,19 @@ const Upload = () => {
                 onChange={handleFileUpload}
                 disabled={existingFile}
               />
-              {uploadedFile && (
+              {/* Display Uploaded File or Existing File */}
+              {(uploadedFile || existingFile) && (
                 <div className="p-4 mt-4 bg-white rounded-lg shadow-md">
                   <p className="text-gray-700">
-                    Uploaded: <span className="font-medium">{uploadedFile.name}</span>
+                    {existingFile ? (
+                      <>
+                      
+                      </>
+                    ) : (
+                      <>
+                        Uploaded: <span className="font-medium">{uploadedFile.name}</span>
+                      </>
+                    )}
                   </p>
                 </div>
               )}
@@ -209,9 +222,11 @@ const Upload = () => {
           {activeSection === 'qna' && <QNA />}
 
           {activeSection === 'textUpload' && <TextUpload />}
+          {activeSection === 'uploaded'&& <Uploaded />}
+
         </div>
       </div>
-    </>
+    </div>
   );
 };
 
