@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import { FaEnvelope, FaBuilding, FaKey } from "react-icons/fa";
 import background from '../assets/black-back.png';
+import ChatDetails from "./ChatDetails";
 
 export default function Profile() {
     const pic = localStorage.getItem("Picture");
@@ -9,6 +10,9 @@ export default function Profile() {
     const api = localStorage.getItem("apiKey");
     const email = localStorage.getItem("email");
     const company = localStorage.getItem("companyname");
+
+    const [activateSection, setActiveSection] = useState('profile');
+
 
     const handleLogout = async () => {
         try {
@@ -37,6 +41,26 @@ export default function Profile() {
                 width: '100%',
             }}
         >
+         <div className='flex gap-4'> 
+         <div className="flex flex-col px-4 py-6 space-y-4 bg-white border border-gray-200 shadow-md rounded-xl">
+    <button className="px-4 py-2 text-white transition-colors bg-blue-500 rounded-lg shadow-sm hover:bg-blue-600"
+      onClick={()=>setActiveSection('profile')}
+      >
+        Profile
+    </button>
+    <button className="px-4 py-2 text-white transition-colors bg-blue-500 rounded-lg shadow-sm hover:bg-blue-600"
+    onClick={()=>setActiveSection('chatdetails')}
+    >
+        ChatBot Details
+    </button>
+</div>
+
+
+
+
+     {activateSection == "profile" &&(
+
+   
             <div className="w-full max-w-sm p-6 bg-white shadow-xl sm:max-w-md md:max-w-lg lg:max-w-xl md:p-8 dark:bg-gray-800 rounded-2xl">
                 <div className="flex flex-col items-center mb-6">
                     <img
@@ -77,6 +101,9 @@ export default function Profile() {
                     </button>
                 </div>
             </div>
-        </div>
+              )}
+                  {activateSection === 'chatdetails' && <ChatDetails />}
+            </div>  
+            </div>
     );
 }

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 
 export default function QNA() {
   const [qnaList, setQnaList] = useState([]);
@@ -6,31 +7,16 @@ export default function QNA() {
   const [answer, setAnswer] = useState('');
   const [showAddForm, setShowAddForm] = useState(false);
   const [newQnas, setNewQnas] = useState([]);
-  const [loading, setLoading] = useState(false); // Loading state
-  const [error, setError] = useState(''); // Error handling
-
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [message, setMessage] =useState('');
+  
   const SERVER_URL = 'https://wishchat.goodwish.com.np/api/upload/'; // Replace with your server URL
+  const token = localStorage.getItem('token');
+  const navigate = useNavigate(); // Initialize the navigate function
 
-  // Fetch Q&A from server when component mounts
-  useEffect(() => {
-    const fetchQnaFromServer = async () => {
-      setLoading(true);
-      try {
-        const response = await fetch(SERVER_URL);
-        const data = await response.json();
-        setQnaList(data);
-      } catch (error) {
-        console.error('Error fetching Q&A:', error);
-        setError('Failed to load Q&A data.');
-      } finally {
-        setLoading(false);
-      }
-    };
+ 
 
-    fetchQnaFromServer();
-  }, []);
-
-  // Handle adding a new Q&A pair to newQnas list
   const handleAddQna = () => {
     if (question.trim() && answer.trim()) {
       const newQna = { question, answer };
@@ -42,7 +28,6 @@ export default function QNA() {
     }
   };
 
-  // Handle submitting all new Q&A pairs to the backend
   const handleSubmitQnas = async () => {
     if (newQnas.length === 0) {
       alert('No new Q&As to submit.');
@@ -51,16 +36,52 @@ export default function QNA() {
 
     setLoading(true);
     try {
+      // Convert the QNA array to a formatted string
+      const qnaText = newQnas
+        .map((qna, index) => `Q${index + 1}: ${qna.question}\nA${index + 1}: ${qna.answer}\n`)
+        .join('\n');
+
+      // Create a Blob for the .txt file
+      const blob = new Blob([qnaText], { type: 'text/plain' });
+
+      // The filename that you want to send
+      const generateRandomFilename = () => {
+        const randomNumber = Math.floor(Math.random() * 90000) + 10000; // Generates a random number between 10000 and 99999
+        return `QNA${randomNumber}.txt`;
+      };
+
+      const filename = generateRandomFilename();
+
+      // Use FormData to send the file and the filename
+      const formData = new FormData();
+      formData.append('file', blob, filename); // Attach the file with the filename
+      formData.append('filename', filename); // Send the filename as a separate variable
+
       const response = await fetch(SERVER_URL, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newQnas),
+        headers: {
+          Authorization: `Token ${token}`,
+        },
+        body: formData,
       });
 
       if (response.ok) {
+        // Assuming the server returns the file URL or content in the response
+        const data = await response.json();
+        const uploadedFileUrl = data.fileUrl; // Assuming the server returns a file URL
+
         setQnaList((prevList) => [...prevList, ...newQnas]);
         setNewQnas([]);
         setShowAddForm(false);
+        localStorage.setItem('has_active_chatbot', JSON.stringify(true));
+        localStorage.setItem('filename', filename);
+        navigate('/playground'); // Use navigate to redirect
+
+        // Optionally store the file URL or content
+        setQnaList((prevList) => [
+          ...prevList,
+          { question: 'File Uploaded', answer: uploadedFileUrl },
+        ]);
       } else {
         console.error('Failed to submit Q&As');
         setError('Failed to submit new Q&A pairs.');
@@ -73,30 +94,44 @@ export default function QNA() {
     }
   };
 
-  // Handle deleting a Q&A
   const handleDeleteQna = async (index) => {
     const updatedList = [...qnaList];
     updatedList.splice(index, 1);
     setQnaList(updatedList);
-    // Optional: Send delete request to server if required
   };
+const file = localStorage.getItem("filename");
+
+const handleadd = () =>{
+  setShowAddForm(!showAddForm)
+  if(file){
+setMessage("You can Upload only one file at one time");
+  }
+}
+
 
   return (
-    <div className="max-w-4xl min-h-screen p-8 mx-auto font-sans bg-gray-50">
+    <div className="max-w-4xl min-h-screen p-8 mx-auto font-sans bg-gray-50"    style={{ fontFamily: "Georgia" }}>
       <h1 className="mb-6 text-3xl font-bold text-center text-gray-900">Interactive Q&A</h1>
 
-      {/* Toggle Form Button */}
       <button
-        onClick={() => setShowAddForm(!showAddForm)}
-        className="px-6 py-3 mb-6 text-white transition bg-indigo-600 rounded-md cursor-pointer hover:bg-indigo-700"
-      >
-        {showAddForm ? 'Cancel' : 'Add a New Q&A'}
-      </button>
+  onClick={handleadd}
+  disabled={file}
+ 
+  className={`px-6 py-3 mb-6 text-white transition bg-indigo-600 rounded-md ${
+    file ? "cursor-not-allowed" : "cursor-pointer"
+  } hover:bg-indigo-700`}
+  title={ file ? 'First delete the uploaded file to upload' : ''}
+>
+  
+  {showAddForm ? "Cancel" : "Add a New Q&A"}
+</button>
 
-      {/* Add Form */}
+      <p className='text-black'>{message}</p>
+
       {showAddForm && (
         <div className="p-6 mb-6 bg-white border-2 border-black rounded-md shadow-lg">
-          <h3 className="mb-4 text-xl font-semibold text-gray-900">Add a Q&A Pair</h3>
+          <h3 className="mb-4 text-xl font-semibold text-gray-900" >Add a Q&A Pair</h3>
+
           <label className="block mb-2 text-gray-800">Question:</label>
           <input
             type="text"
@@ -124,7 +159,6 @@ export default function QNA() {
         </div>
       )}
 
-      {/* Newly Added Q&A */}
       {newQnas.length > 0 && (
         <div className="p-6 mb-6 bg-white border-2 rounded-md border-slate-500">
           <h3 className="mb-4 text-xl font-semibold text-gray-900">New Q&A Pairs</h3>
@@ -145,35 +179,8 @@ export default function QNA() {
         </div>
       )}
 
-      {/* Error Message */}
       {error && <p className="mb-6 text-red-500">{error}</p>}
 
-      {/* Q&A List */}
-      <div className="p-6 mb-6 bg-white border-2 border-gray-300 rounded-lg shadow-xl">
-        <h3 className="mb-6 text-2xl font-semibold text-gray-900">Q&A List</h3>
-        {loading ? (
-          <p className="text-gray-600">Loading...</p>
-        ) : qnaList.length > 0 ? (
-          <ul className="space-y-6">
-            {qnaList.map((qna, index) => (
-              <li key={index} className="flex items-start justify-between pb-4 border-b">
-                <div className="w-full">
-                  <p className="font-semibold text-gray-800">Question: {qna.question}</p>
-                  <p className="text-gray-700">Answer: {qna.answer}</p>
-                </div>
-                <button
-                  onClick={() => handleDeleteQna(index)}
-                  className="px-4 py-2 text-white transition duration-200 bg-red-500 rounded-md hover:bg-red-600"
-                >
-                  Delete
-                </button>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p className="text-gray-600">No Q&A pairs available.</p>
-        )}
-      </div>
     </div>
   );
 }

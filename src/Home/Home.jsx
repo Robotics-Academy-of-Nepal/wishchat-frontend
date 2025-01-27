@@ -4,6 +4,7 @@ import goodwishLogo from '../assets/wishchat-logo.png';
 import goodwishvideo from '../assets/wishchat.mp4';
 import styles from './home.module.css';
 import axios from 'axios';
+import Footer from '../Components/footer/Footer';
 
 function Home() {
     const navigate = useNavigate();
@@ -73,8 +74,8 @@ function Home() {
             <div className="flex flex-col items-center justify-between px-6 py-10 md:flex-row"
           >
   <div className="flex flex-col items-start justify-center space-y-4 ">
-    <p className="text-2xl font-bold text-center md:text-left"
-       style={{ fontFamily: 'cursive' }}>
+    <p className="text-5xl font-bold text-center md:text-left"
+        style={{ fontFamily: 'Helvetica' }}>
       Welcome to WishChat
     </p>
     <p className="text-lg font-semibold text-center md:text-left">
@@ -83,16 +84,16 @@ function Home() {
     <button 
       className="px-6 py-2 text-white transition bg-blue-500 rounded-md shadow-md hover:bg-blue-600"
       
-      style={{ fontFamily: 'cursive' }}onClick={handleGetStarted}
+       style={{ fontFamily: 'Helvetica' }}onClick={handleGetStarted}
     >
       {isAuthenticated ? 'Go to Dashboard →' : 'Get Started →'}
     </button>
   </div>
-  <div className="w-full mt-8 md:mt-0">
+  <div className="w-full md:w-[700px] mt-8 md:mt-0">
     <video className="w-full h-auto border-2 border-black border-solid rounded-lg md:h-auto" src={goodwishvideo} muted autoPlay loop playsInline></video>
   </div>
 </div>
-
+<Footer/>
         </>
     );
 }
