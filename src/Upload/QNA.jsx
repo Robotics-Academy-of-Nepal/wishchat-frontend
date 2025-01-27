@@ -11,7 +11,7 @@ export default function QNA() {
   const [error, setError] = useState('');
   const [message, setMessage] =useState('');
   
-  const SERVER_URL = 'http://192.168.1.38:8000/api/upload/'; // Replace with your server URL
+  const SERVER_URL = 'https://wishchat.goodwish.com.np/api/upload/'; // Replace with your server URL
   const token = localStorage.getItem('token');
   const navigate = useNavigate(); // Initialize the navigate function
 
@@ -114,13 +114,18 @@ setMessage("You can Upload only one file at one time");
       <h1 className="mb-6 text-3xl font-bold text-center text-gray-900">Interactive Q&A</h1>
 
       <button
-        onClick={handleadd}
-        disabled={file}
-       
-        className="px-6 py-3 mb-6 text-white transition bg-indigo-600 rounded-md cursor-pointer hover:bg-indigo-700"
-      >
-        {showAddForm ? 'Cancel' : 'Add a New Q&A'}
-      </button>
+  onClick={handleadd}
+  disabled={file}
+ 
+  className={`px-6 py-3 mb-6 text-white transition bg-indigo-600 rounded-md ${
+    file ? "cursor-not-allowed" : "cursor-pointer"
+  } hover:bg-indigo-700`}
+  title={ file ? 'First delete the uploaded file to upload' : ''}
+>
+  
+  {showAddForm ? "Cancel" : "Add a New Q&A"}
+</button>
+
       <p className='text-black'>{message}</p>
 
       {showAddForm && (

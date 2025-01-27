@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import Navbar from '../Components/Navbar/Navbar';
-import { data } from 'react-router-dom';
 
 export default function Playground() {
   const [messages, setMessages] = useState([]);
@@ -18,20 +17,16 @@ export default function Playground() {
 
       try {
         setIsLoading(true);
-        const response = await fetch('http://192.168.1.38:8000/api/query/', {
+        const response = await fetch('https://wishchat.goodwish.com.np/api/query/', {
           method: 'POST',
           headers: {
             'Authorization': `Token ${token}`,
             'Content-Type': 'application/json',
-
           },
           body: JSON.stringify({ query: input }),
         });
-      
-
 
         const data = await response.json();
-        console.log(data.response);
         setMessages((prevMessages) => [
           ...prevMessages,
           { text: data.response, sender: 'bot' },
@@ -47,12 +42,11 @@ export default function Playground() {
     }
   };
 
-
   const handleApplySystemPrompt = async () => {
     const token = localStorage.getItem('token');
     if (systemPrompt.trim()) {
       try {
-        const response = await fetch('http://192.168.1.38:8000///api/apply-changes/', {
+        const response = await fetch('https://wishchat.goodwish.com.np/api/apply-changes/', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -69,19 +63,41 @@ export default function Playground() {
     }
   };
 
+  // Utility function to make links clickable
+  const renderMessageText = (text) => {
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+    const parts = text.split(urlRegex);
+
+    return parts.map((part, index) =>
+      urlRegex.test(part) ? (
+        <a
+          key={index}
+          href={part}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-blue-500 underline"
+        >
+          {part}
+        </a>
+      ) : (
+        part
+      )
+    );
+  };
+
   return (
     <>
       <Navbar />
       <div className="flex flex-col items-center justify-start px-6 pt-5 pb-8 bg-gray-100 min-h-auto">
         <div className="grid w-full max-w-6xl grid-cols-1 gap-8 lg:grid-cols-2">
           {/* System Prompt Section */}
-          <div className="flex flex-col items-start p-6 bg-white border border-gray-300 shadow-xl shadow-gray-500 rounded-xl">
+          <div className="flex flex-col items-start p-6 md:h-[300px] bg-white border border-gray-300 shadow-xl shadow-gray-500 rounded-xl">
             <h1 className="mb-4 text-xl font-semibold text-gray-800">System Prompt</h1>
             <textarea
               value={systemPrompt}
               onChange={(e) => setSystemPrompt(e.target.value)}
               placeholder="Enter system prompt here..."
-              className="w-full h-40 p-4 mb-4 border border-gray-300 rounded-lg shadow-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full h-40 p-4 mb-4 border-gray-500 border-solid rounded-lg shadow-sm resize-none border-1 focus:ring-2 focus:ring-blue-500 "
             ></textarea>
             <button
               onClick={handleApplySystemPrompt}
@@ -106,7 +122,7 @@ export default function Playground() {
                         : 'bg-gray-200 text-gray-900'
                     }`}
                   >
-                    {msg.text}
+                    {renderMessageText(msg.text)}
                   </div>
                 </div>
               ))}
@@ -116,20 +132,18 @@ export default function Playground() {
             </div>
 
             <div className="flex items-center p-4 bg-white border-t border-gray-300 rounded-b-lg">
-            <input
-  type="text"
-  cl
-  value={input}
-  onChange={(e) => setInput(e.target.value)}
-  onKeyDown={(e) => {
-    if (e.key === 'Enter' && !isLoading) {
-      handleSendMessage();
-    }
-  }}
-  className="flex-1 p-3 border-2 border-gray-400 border-solid rounded-lg focus:outline-none "
-  placeholder="Type a message..."
-/>
-
+              <input
+                type="text"
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && !isLoading) {
+                    handleSendMessage();
+                  }
+                }}
+                className="flex-1 p-3 border-2 border-gray-400 border-solid rounded-lg focus:outline-none "
+                placeholder="Type a message..."
+              />
               <button
                 onClick={handleSendMessage}
                 className="px-6 py-3 ml-4 text-white bg-blue-600 rounded-lg shadow-md shadow-black hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"

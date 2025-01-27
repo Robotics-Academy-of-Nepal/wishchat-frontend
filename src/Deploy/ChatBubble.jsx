@@ -41,7 +41,7 @@ export default function Chatbot({apikey}) {
   
       try {
         const response = await fetch(
-          process.env.REACT_APP_CHATBOT_API_URL || "url",
+          process.env.REACT_APP_CHATBOT_API_URL || "https://wishchat.goodwish.com.np/api/chat",
           {
             method: "POST",
             headers: {

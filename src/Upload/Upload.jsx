@@ -34,7 +34,7 @@ const Upload = () => {
   const handleDeleteExistingFile = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://192.168.1.38:8000/api/delete/', {
+      const response = await fetch('https://wishchat.goodwish.com.np/api/delete/', {
         method: 'DELETE',
         headers: {
           Authorization: `Token ${token}`,
@@ -89,7 +89,7 @@ const Upload = () => {
         formData.append('filename', fileObj.name);
       });
 
-      const response = await fetch('http://192.168.1.38:8000/api/upload/', {
+      const response = await fetch('https://wishchat.goodwish.com.np/api/upload/', {
         method: 'POST',
         headers: {
           Authorization: `Token ${token}`,
@@ -199,7 +199,12 @@ const Upload = () => {
                 </div>
               )}
               <button
-                className="px-4 py-2 mt-4 text-white bg-blue-500 rounded-lg hover:bg-blue-600"
+                className={`px-4 py-2 mt-4 text-white bg-blue-500 rounded-lg hover:bg-blue-600 ${
+                  !existingFile ? '' : 'cursor-not-allowed'
+                  
+                }`}
+                title={ existingFile ? 'First delete the uploaded file to upload' : ''}
+             
                 onClick={handleTrainChatbot}
                 disabled={existingFile || trainedFiles.length === 0 || isTraining}
               >

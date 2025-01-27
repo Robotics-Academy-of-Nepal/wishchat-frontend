@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import { TiTick } from "react-icons/ti";
 import { FaInfinity } from "react-icons/fa";
+import { v4 as uuidv4 } from 'uuid';
+import CryptoJS from 'crypto-js';
 
-const PricingCard = ({ planName, price, features, isActive, onClick }) => (
+const PricingCard = ({ planName, price, features, isActive, onClick, btnclick }) => (
   <div
     className={`shadow-xl mb-5 hover:scale-105 shadow-gray-500 h-[420px] md:w-[320px] rounded-2xl flex flex-col p-5 transition-all ${
       isActive ? "bg-[#29338A]" : "bg-white"
@@ -51,6 +53,7 @@ const PricingCard = ({ planName, price, features, isActive, onClick }) => (
       <hr className="h-0.5 bg-black border-none" />
     </div>
     <button
+      onClick={btnclick}
       style={{ fontFamily: "Georgia" }}
       className="w-full py-2 mt-6 text-white transition-all bg-blue-600 rounded-2xl hover:bg-blue-700 hover:shadow-md"
     >
@@ -60,36 +63,85 @@ const PricingCard = ({ planName, price, features, isActive, onClick }) => (
 );
 
 export default function Pricing() {
+  const handlePayment = (totalAmount) => {
+    console.log("button clicked");
+    // Generate a UUID
+    const transaction_uuid = uuidv4();
+
+    // Define the payload
+    const payload = {
+      amount: totalAmount,
+      tax_amount: "0",
+      total_amount: totalAmount,
+      transaction_uuid: transaction_uuid,
+      product_code: "EPAYTEST",
+      product_service_charge: "0",
+      product_delivery_charge: "0",
+      success_url: "https://wishchat.goodwish.com.np/api/payment-success",
+      failure_url: "https://wishchat.goodwish.com.np/api/payment-failure",
+      signed_field_names: "total_amount,transaction_uuid,product_code",
+    };
+
+    // Prepare the message for signature
+    const message = `total_amount=${payload.total_amount},transaction_uuid=${payload.transaction_uuid},product_code=${payload.product_code}`;
+
+    // Generate the signature using HMAC-SHA256
+    const secret = "8gBm/:&EnhH.1/q";
+    const signature = CryptoJS.HmacSHA256(message, secret).toString(CryptoJS.enc.Base64);
+
+    // Add the signature to the payload
+    payload.signature = signature;
+
+    console.log("Payload:", payload); // Log the payload
+
+    // Create a hidden form and submit it
+    const form = document.createElement("form");
+    form.method = "POST";
+    form.action = "https://rc-epay.esewa.com.np/api/epay/main/v2/form";
+
+    // Add payload fields as hidden inputs
+    for (const key in payload) {
+      if (payload.hasOwnProperty(key)) {
+        const input = document.createElement("input");
+        input.type = "hidden";
+        input.name = key;
+        input.value = payload[key];
+        form.appendChild(input);
+      }
+    }
+
+    // Append the form to the body and submit it
+    document.body.appendChild(form);
+    form.submit();
+  };
+
   const [selectedPlan, setSelectedPlan] = useState(null);
 
- 
   const handleClick = (plan) => {
     setSelectedPlan(plan);
   };
 
   const isActive = (plan) => selectedPlan === plan;
+
   const plans = [
-    {
-      name: "Free Plan",
-      price: "0",
-      features: ["500 monthly messages"],
-    },
     {
       name: "Basic Plan",
       price: "5,000",
       features: ["5,000 monthly messages"],
+      btnclick: () => handlePayment("5000"),
     },
     {
       name: "Middle Plan",
       price: "7,000",
       features: ["7,000 monthly messages"],
+      btnclick: () => handlePayment("7000"),
     },
     {
-      name: "premium Plan",
+      name: "Premium Plan",
       price: "10,000",
       features: ["10,000 monthly messages"],
+      btnclick: () => handlePayment("10000"),
     },
-  
   ];
 
   return (
@@ -106,49 +158,19 @@ export default function Pricing() {
             features={plan.features}
             isActive={selectedPlan === plan.name}
             onClick={() => handleClick(plan.name)}
+            btnclick={plan.btnclick}
           />
         ))}
-           <div
-        
-        className={`shadow-xl  hover:scale-105 shadow-gray-500 h-[420px] md:w-[320px] rounded-2xl flex flex-col p-5 transition-all ${
-          isActive("basic") ? "bg-[#29338A]" : "bg-white"
-        }`}
-        onClick={() => handleClick("basic")}
-      >
-        <h1 className={`mt-2 text-3xl font-extrabold text-gray-800 ${
-          isActive("basic") ? "text-white" : "text-gray-800"
-        }`}>Enterprise Plan</h1>
-
-        <div className="mt-3"
-        style={{ fontFamily: "Georgia" }}
-        >
-          <h1 className={`text-3xl font-bold text-blue-600 ${
-          isActive("basic") ? "text-white" : "text-blue-600"
-          }`}>
-            Contact to  WishChat<sup className={`text-lg font-medium text-gray-500 ${
-              isActive("basic") ? "text-white" : "text-gray-500"
-            }
-              
-              `} style={{ fontFamily: "Georgia" }}>/month</sup>
-          </h1>
-        </div>
-        <div className="mt-5 space-y-1">
-          <div className="flex items-center gap-1">
-            <TiTick className="text-3xl text-green-500" />
-            <h1 className={`text-gray-700 text-md flex gap-2 ${
-              isActive("basic") ? "text-white" : "text-gray-700"
-            }`}
-            style={{ fontFamily: "Georgia" }}
-          ><FaInfinity /> monthly messages</h1>
-          </div>
-          <hr className="h-0.5 bg-black border-none" />
-        </div>
-        <button 
-         style={{ fontFamily: "Georgia" }}
-        className="w-full py-2 mt-6 text-white transition-all bg-blue-600 rounded-2xl hover:bg-blue-700 hover:shadow-md">
-          Get Started
-        </button>
-      </div>
+        {/* Enterprise Plan */}
+        <PricingCard
+          key="enterprise"
+          planName="Enterprise Plan"
+          price="Contact for Pricing"
+          features={["Custom features and pricing"]}
+          isActive={selectedPlan === "enterprise"}
+          onClick={() => handleClick("enterprise")}
+          // btnclick={() => handlePayment("Contact for Pricing")}
+        />
       </div>
     </div>
   );

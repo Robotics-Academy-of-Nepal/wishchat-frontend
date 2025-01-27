@@ -22,7 +22,7 @@ export default function ChatDetails() {
   useEffect(() => {
     const fetchMessageData = async () => {
       try {
-        const response = await fetch('http://192.168.1.38:8000/api/message-usage/', {
+        const response = await fetch('https://wishchat.goodwish.com.np/api/message-usage/', {
           headers: {
             'X-API-Key': api,
             Authorization: `Token ${token}`,

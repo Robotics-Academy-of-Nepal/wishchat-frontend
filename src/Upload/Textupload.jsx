@@ -26,7 +26,7 @@ export default function TextUpload() {
       setIsLoading(true); // Show loading indicator
       setMessage(''); // Clear any previous messages
 
-      const response = await fetch('http://192.168.1.38:8000/api/upload/', {
+      const response = await fetch('https://wishchat.goodwish.com.np/api/upload/', {
         method: 'POST',
         body: formData,
         headers: {
@@ -66,15 +66,18 @@ export default function TextUpload() {
         placeholder="Enter your message here..."
       />
 
-      <button
-        onClick={handleSubmit}
-        className={`bg-green-500 text-white font-semibold py-2 px-6 rounded-lg transition-all duration-300 ${
-          isLoading ? 'opacity-50 cursor-not-allowed' : 'hover:bg-green-600'
-        }`}
-        disabled={isLoading}
-      >
-        {isLoading ? 'Uploading...' : 'Upload'}
-      </button>
+<button
+  onClick={handleSubmit}
+  className={`bg-green-500 text-white font-semibold py-2 px-6 rounded-lg transition-all duration-300 ${
+    isLoading || file ? 'opacity-50 cursor-not-allowed' : 'hover:bg-green-600'
+  }`}
+  disabled={isLoading || file}
+  title={ file ? 'First delete the uploaded file to upload' : ''}
+>
+  {isLoading ? 'Uploading...' : 'Upload'}
+</button>
+
+
 
       {/* Feedback Message */}
       {message && (

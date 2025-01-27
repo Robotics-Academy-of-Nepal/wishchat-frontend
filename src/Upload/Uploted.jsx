@@ -36,7 +36,7 @@ const Uploaded = () => {
  
       try {
         const token = localStorage.getItem('token');
-        const response = await fetch('http://192.168.1.38:8000/api/delete/', {
+        const response = await fetch('https://wishchat.goodwish.com.np/api/delete/', {
           method: 'DELETE',
           headers: {
             Authorization: `Token ${token}`,
@@ -95,7 +95,7 @@ const Uploaded = () => {
         formData.append('filename', fileObj.name);
       });
 
-      const response = await fetch('http://192.168.1.38:8000/api/upload/', {
+      const response = await fetch('https://wishchat.goodwish.com.np/api/upload/', {
         method: 'POST',
         headers: {
           Authorization: `Token ${token}`,
@@ -130,7 +130,7 @@ const Uploaded = () => {
         {existingFile ? (
           <div className='flex items-center justify-center gap-[100px] text-3xl'>
             <span>
-              <span className="text-gray-600">Uploaded File: </span>
+              <span className="text-gray-600"    style={{ cursor: "not-allowed", padding: "20px", backgroundColor: "#f0f0f0" }}>Uploaded File: </span>
               <span className="font-semibold text-gray-900">{existingFile}</span>
             </span>
             <Trash2
