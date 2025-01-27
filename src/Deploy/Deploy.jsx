@@ -28,7 +28,7 @@ export default function Deploy() {
   return (
     <div>
       <Navbar />
-      <Chat apiKey="afb01219-3f5c-4b00-abc0-4c15183c8789" />
+      <Chat apikey="96e4ba03-62b1-4455-8891-6d099cb4163a" />
       <div className="row flex items-center justify-center gap-[100px] mx-3 mt-3">
         <Card
           image={whatsapp}

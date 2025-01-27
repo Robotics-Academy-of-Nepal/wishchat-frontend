@@ -1,12 +1,10 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { IoSend } from "react-icons/io5";
-import logo from '../assets/wishchat-logo.png';
-import { IoClose } from "react-icons/io5";
+import { IoSend, IoClose } from "react-icons/io5";
+import logo from "../assets/wishchat-logo.png";
+import bot from "../assets/bot.png";
+import user from "../assets/user.png";
 
-import bot from '../assets/bot.png'
-import user from '../assets/user.png'
-
-export default function Chatbot({apikey}) {
+export default function Chatbot({ apikey }) {
   const [isChatbotVisible, setIsChatbotVisible] = useState(false);
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
@@ -24,7 +22,6 @@ export default function Chatbot({apikey}) {
   }, [isChatbotVisible, messages.length]);
 
   useEffect(() => {
-   
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
@@ -34,38 +31,28 @@ export default function Chatbot({apikey}) {
       const newMessages = [...messages, { text: input, sender: "user" }];
       setMessages(newMessages);
       setInput("");
-  
- 
+
       const typingMessage = { text: "Typing...", sender: "bot", isTyping: true };
       setMessages([...newMessages, typingMessage]);
-  
+
       try {
-        const response = await fetch(
-          process.env.REACT_APP_CHATBOT_API_URL || "https://wishchat.goodwish.com.np/api/chat",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-               query: input,
-               apiKey: apiKey 
+        const response = await fetch("https://wishchat.goodwish.com.np/api/chat/", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            query: input,
+            apiKey: apikey,
+          }),
+        });
 
-             }),
-          }
-        );
-  
         const data = await response.json();
-        let botResponse = data.response;
-  
-    
+        const botResponse = data.response;
 
-        setMessages([
-          ...newMessages,
-          { text: botResponse, sender: "bot" },
-        ]);
+        setMessages([...newMessages, { text: botResponse, sender: "bot" }]);
       } catch (error) {
-        console.error("Error:", error);
+        console.error("Error:", error.message);
         setMessages([
           ...newMessages,
           { text: "Sorry, I couldn't connect to the server.", sender: "bot" },
@@ -74,7 +61,9 @@ export default function Chatbot({apikey}) {
         setIsLoading(false);
       }
     }
-  }, [input, messages, isLoading]);
+  }, [input, messages, isLoading, apikey]);
+
+  console.log(apikey);
 
   const renderMessageText = (text, isTyping) => {
     if (isTyping) {
@@ -105,171 +94,120 @@ export default function Chatbot({apikey}) {
     );
   };
 
- 
-
   return (
     <>
-      <div className="fixed z-50 flex flex-col items-center space-y-1 bottom-4 right-4 md:bottom-6 md:right-6 lg:bottom-8 lg:right-8">
-    
-        <button
-          type="button"
-          className="p-3 text-xs text-white transition-transform transform bg-blue-500 rounded-full shadow-xl md:text-sm lg:text-base md:p-4 lg:p-4 hover:scale-105"
-          onClick={toggleChatbotVisibility}
-        >
-          <span className="text-2xl font-bold"    style={{ fontFamily: "Georgia" }}>
-          💬
-          </span>
-      
-        </button>
-        {/* <p    style={{ fontFamily: "Georgia" }}>Power by GoodWish</p> */}
-      </div>
-
-      {isChatbotVisible && (
-        <div
-             style={{ fontFamily: "Georgia" }}
-          className="fixed bottom-4 right-1 md:bottom-6 md:right-6 lg:bottom-8 lg:right-4 z-50 w-[85%] max-w-lg md:w-[300px] lg:w-[350px] h-[500px] md:h-[500px] lg:h-[550px] xl:h-[550px] xl:w-[420px] bg-white  rounded-3xl shadow-xl flex flex-col transform transition-all duration-300 ease-in-out shadow-3xl shadow-blue-300"
-        >
-      
-          <div className="flex items-center  justify-between h-16 md:h-[55px] p-3 bg-blue-500 rounded-t-lg shadow-md  ">
-           <h1></h1>
-      
-            <h1 className="p-0 text-lg font-bold text-white md:text-lg lg:text-xl">Chat Bot </h1>
-            
-            <button
-              type="button"
-              className="p-1 text-white bg-red-500 rounded-full "
-              onClick={() => setIsChatbotVisible(false)}
-            >
-        <IoClose className="w-7 h-7" />
-
-            </button>
-    
-           
-      
-          </div>
-    
-
-
-          <div className="flex-1 p-3 my-2 space-y-3 overflow-y-auto">
-            {messages.map((message, index) => (
-              <div
-                key={index}
-                className={`flex items-center ${
-                  message.sender === "user" ? "justify-end" : "justify-start"
-                }`}
-              >
-                {message.sender === "bot" && (
-                  <div className="flex flex-col items-center font-semibold text-center">
-                    <img
-                      src={bot}
-                      alt="Bot Icon"
-                      className="w-10 h-10 mr-2 border-blue-500 border-solid rounded-full border-1"
-                    />
-                    <p className="text-[13px]">Chat<br/> Bot</p>
-                  </div>
-                )}
-                <div
-                  className={`p-2 my-2 rounded-lg shadow-md transition-transform duration-200 ${
-                    message.sender === "user"
-                      ? "bg-blue-400 text-gray-200 shadow-3xl shadow-blue-300"
-                      : "bg-white text-black shadow-3xl shadow-black"
-                  } max-w-[80%] md:max-w-[70%] lg:max-w-[60%] text-xs md:text-sm lg:text-sm break-words`}
-                >
-                  {renderMessageText(message.text, message.isTyping)}
-                </div>
-
-                {message.sender === "user" && (
-                  <div className="flex flex-col items-center p-0 text-center">
-                    <img
-                      src={user}
-                      alt="User Icon"
-                      className="w-10 h-10 rounded-full"
-                    />
-                    <p className="text-[13px]">
-                       User
-                    </p>
-                  </div>
-                )}
-              </div>
-            ))}
-            <div ref={messagesEndRef} />
-          </div>
-
-          <div className="flex-col items-center p-4 bg-white rounded-lg shadow-md">
-  <div className="flex items-center w-full space-x-2">
-    <input
-      type="text"
-      className="flex-grow w-full md:w-[350px] p-3 text-sm border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200 ease-in-out"
-      value={input}
-      onChange={(e) => setInput(e.target.value)}
-      onKeyPress={(e) => {
-        if (e.key === "Enter") {
-          handleSendMessage();
-        }
-      }}
-      placeholder="Type your message..."
-    />
-    <button
-      type="button"
-      disabled={isLoading}
-      className={`p-3 bg-gradient-to-r from-blue-500 to-blue-700 text-white rounded-full shadow-lg transition-transform duration-200 ease-in-out ${
-        isLoading
-          ? "bg-gray-400 cursor-not-allowed "
-          : "hover:scale-105"
-      }`}
-      onClick={handleSendMessage}
-    >
-      <IoSend className="shadow-xl shadow-black" />
-    </button>
-  </div>
-
-  <div className="flex items-center justify-center gap-2 mt-3 text-center">
-  <div className="flex items-center justify-center gap-2 text-center text-black bg-white shadow-3xl shadow-black">
-    <h1 className="font-serif text-lg text-gray-700">Powered By</h1>
-    <img src={logo} className="h-[40px] w-[40px] rounded-full shadow-md" />
-    </div>
-  </div>
-</div>
-
+      <div className="relative "     style={{ fontFamily: "Georgia" }}>
+        {/* Chat Bubble */}
+        <div className="fixed z-50 flex flex-col items-center bottom-4 right-4 md:bottom-6 md:right-6">
+          <button
+            type="button"
+            className="p-3 text-xs text-white transition-transform bg-blue-500 rounded-full shadow-xl hover:scale-105"
+            onClick={toggleChatbotVisibility}
+          >
+            <span className="text-2xl font-bold" style={{ fontFamily: "Georgia" }}>
+              💬
+            </span>
+          </button>
         </div>
-      )}
 
-      
+        {/* Chat Window */}
+        {isChatbotVisible && (
+          <div className="fixed bottom-4 right-4 z-50 w-[85%] max-w-lg md:w-[350px] lg:w-[400px] h-[500px] bg-white rounded-3xl shadow-xl flex flex-col">
+            {/* Header */}
+            <div className="flex items-center justify-between h-16 p-3 bg-blue-500 rounded-t-lg">
+              <h1 className="text-lg font-bold text-white">Chat Bot</h1>
+              <button
+                type="button"
+                className="p-1 text-white bg-red-500 rounded-full"
+                onClick={() => setIsChatbotVisible(false)}
+              >
+                <IoClose className="w-7 h-7" />
+              </button>
+            </div>
+
+            {/* Messages */}
+            <div className="flex-1 p-3 space-y-3 overflow-y-auto">
+              {messages.map((message, index) => (
+                <div
+                  key={index}
+                  className={`flex items-center ${
+                    message.sender === "user" ? "justify-end" : "justify-start"
+                  }`}
+                >
+                  {message.sender === "bot" && (
+                    <img src={bot} alt="Bot" className="w-10 h-10 mr-2 rounded-full" />
+                  )}
+                  <div
+                    className={`p-2 rounded-lg shadow-md ${
+                      message.sender === "user"
+                        ? "bg-blue-400 text-white"
+                        : "bg-gray-200 text-black"
+                    } max-w-[70%] break-words`}
+                  >
+                    {renderMessageText(message.text, message.isTyping)}
+                  </div>
+                  {message.sender === "user" && (
+                    <img src={user} alt="User" className="w-10 h-10 ml-2 rounded-full" />
+                  )}
+                </div>
+              ))}
+              <div ref={messagesEndRef} />
+            </div>
+
+            {/* Input */}
+            <div className="flex items-center p-3 space-x-2 bg-gray-100">
+              <input
+                type="text"
+                className="flex-grow p-3 text-sm border-2 border-gray-300 rounded-lg"
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
+                placeholder="Type your message..."
+              />
+              <button
+                type="button"
+                disabled={isLoading}
+                className={`p-3 rounded-full text-white shadow-lg ${
+                  isLoading ? "bg-gray-400 cursor-not-allowed" : "bg-blue-500 hover:scale-105"
+                }`}
+                onClick={handleSendMessage}
+              >
+                <IoSend />
+              </button>
+            </div>
+
+            {/* Footer */}
+            <div className="flex items-center justify-center p-2 bg-gray-200">
+              <h1 className="text-sm text-gray-600">Powered by</h1>
+              <img src={logo} alt="Logo" className="w-8 h-8 ml-2 rounded-full" />
+            </div>
+          </div>
+        )}
+      </div>
       <style jsx>{`
-       .typing-dots {
-  display: flex;
-  justify-content: center; 
-  align-items: center; 
-  height: 100%; 
-}
-
-.dot {
-  font-size: 2rem;
-  margin: 0 2px;
-  animation: blink 2s infinite; 
-}
-
-.dot:nth-child(2) {
-  animation-delay: 0.4s; 
-}
-
-.dot:nth-child(3) {
-  animation-delay: 0.8s; 
-}
-
-@keyframes blink {
-  0%, 33% {
-    opacity: 0;
-  }
-  50% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-  }
-}
-
-
+        .typing-dots {
+          display: flex;
+          align-items: center;
+        }
+        .dot {
+          font-size: 1.5rem;
+          margin: 0 2px;
+          animation: blink 1.4s infinite;
+        }
+        .dot:nth-child(2) {
+          animation-delay: 0.2s;
+        }
+        .dot:nth-child(3) {
+          animation-delay: 0.4s;
+        }
+        @keyframes blink {
+          0%, 100% {
+            opacity: 0;
+          }
+          50% {
+            opacity: 1;
+          }
+        }
       `}</style>
     </>
   );

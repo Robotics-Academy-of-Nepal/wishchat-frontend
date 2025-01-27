@@ -4,7 +4,7 @@ import { FaFacebook, FaInstagramSquare, FaTwitter } from "react-icons/fa";
 
 export default function Footer() {
   return (
-    <footer className="py-3 mb-0 text-white bg-gray-900" style={{ fontFamily: "Georgia" }}>
+    <footer className="fixed bottom-0 w-full py-3 mt-3 mb-0 text-white bg-gray-900 " style={{ fontFamily: "Georgia" }}>
       <div className="container grid grid-cols-1 gap-8 mx-auto md:grid-cols-3">
         {/* Logo and Social Icons Section */}
         <div className="flex flex-col items-center text-center">
@@ -45,7 +45,7 @@ export default function Footer() {
           <ul className="space-y-3 text-xl">
             <li>
               <a
-                href="#"
+                href="/"
                 className="text-white transition-all hover:text-blue-500"
               >
                 Home
@@ -53,7 +53,7 @@ export default function Footer() {
             </li>
             <li>
               <a
-                href="#"
+                href="/dashboard"
                 className="text-white transition-all hover:text-blue-500"
               >
                 Chatbot
@@ -61,7 +61,7 @@ export default function Footer() {
             </li>
             <li>
               <a
-                href="#"
+                href="/upload"
                 className="text-white transition-all hover:text-blue-500"
               >
                 Build
@@ -69,7 +69,7 @@ export default function Footer() {
             </li>
             <li>
               <a
-                href="#"
+                href="/tutorials"
                 className="text-white transition-all hover:text-blue-500"
               >
                 Tutorials

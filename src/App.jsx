@@ -68,7 +68,7 @@ function MainLayout() {
 
 
       </Routes>
-      <Footer/>
+      {/* <Footer/> */}
     </>
   );
 }

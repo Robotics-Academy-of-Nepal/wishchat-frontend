@@ -4,6 +4,7 @@ import goodwishLogo from '../assets/wishchat-logo.png';
 import goodwishvideo from '../assets/wishchat.mp4';
 import styles from './home.module.css';
 import axios from 'axios';
+import Footer from '../Components/footer/Footer';
 
 function Home() {
     const navigate = useNavigate();
@@ -92,7 +93,7 @@ function Home() {
     <video className="w-full h-auto border-2 border-black border-solid rounded-lg md:h-auto" src={goodwishvideo} muted autoPlay loop playsInline></video>
   </div>
 </div>
-
+<Footer/>
         </>
     );
 }
