@@ -94,7 +94,7 @@ function SignIn() {
                         Sign In
                     </button>
                 </form>
-
+<div className='flex items-center justify-center'>
                 <div className="mt-6">
                     <GoogleLogin
                         onSuccess={(credentialResponse) => {
@@ -116,6 +116,7 @@ function SignIn() {
                         }}
                         className="w-full py-3 text-sm font-semibold text-white transition duration-300 rounded-lg shadow-lg bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 hover:shadow-2xl focus:outline-none focus:ring-4 focus:ring-red-400"
                     />
+                </div>
                 </div>
 
                 {message && (

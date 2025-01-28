@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Navbar from "../Components/Navbar/Navbar";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faRobot } from '@fortawesome/free-solid-svg-icons';
+import logo from '../assets/wishchat-logo.png'
 
 
 function Dashboard() {
@@ -22,16 +23,19 @@ function Dashboard() {
             <Navbar />
             <div className="w-full h-[560px] bg-gray-100 p-8 flex justify-center items-center">
                 {hasActiveChatbot ? (
-              <button
-          className="shadow-xl shadow-black px-[70px] items-center flex justify-center py-[100px] rounded-md border-gray-400 border-solid hover:scale-105 hover:shadow-black "
+             <div className="flex flex-col items-center justify-center gap-2">
+             <button
+          className="flex items-center justify-center border-gray-400 border-solid rounded-md shadow-xl shadow-black hover:scale-105 hover:shadow-black "
               onClick={() => navigate('/playground')}
           >
-              <p className="px-2 py-1 text-xl font-semibold text-black rounded-lg shadow-sm bg-white/80 "
+             <img  className="w-[250px] h-[250px] p-[20px]" src={logo} />
+          </button>
+          <p className="px-10 py-1 text-4xl font-bold"
                style={{ fontFamily: "Georgia" }}
               >
                   {companyName}
               </p>
-          </button>
+          </div>
           
                 ) : (
                     <div className="flex flex-col items-center">
