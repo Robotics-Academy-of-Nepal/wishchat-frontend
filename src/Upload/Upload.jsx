@@ -6,6 +6,7 @@ import QNA from './QNA';
 import TextUpload from './Textupload';
 import Uploaded from './Uploted';
 import styles from './upload.module.css';
+import MainQuestion from './MainQuestion';
 
 const Upload = () => {
   const navigate = useNavigate();
@@ -157,6 +158,12 @@ const Upload = () => {
             >
               uploaded
             </li>
+            <li
+              className={`cursor-pointer p-3 rounded-lg text-center text-lg ${activeSection === 'mainquestion' ? 'bg-blue-500 text-white' : 'text-gray-700 hover:bg-gray-100'}`}
+              onClick={() => setActiveSection('mainquestion')}
+            >
+              Main Question
+            </li>
           </ul>
         </div>
 
@@ -228,7 +235,7 @@ const Upload = () => {
 
           {activeSection === 'textUpload' && <TextUpload />}
           {activeSection === 'uploaded'&& <Uploaded />}
-
+          {activeSection === 'mainquestion'&& <MainQuestion />}
         </div>
       </div>
     </div>

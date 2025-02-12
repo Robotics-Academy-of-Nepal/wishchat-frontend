@@ -138,19 +138,19 @@ export default function ChatDetails() {
             </div>
             <div className="p-6 transition-all bg-white rounded-lg shadow-md hover:shadow-lg">
               <h2 className="text-lg font-semibold">Total Messages</h2>
-              <p className="text-xl font-medium">{messageData.message_limit || 'N/A'}</p>
+              <p className="text-xl font-medium">{messageData.message_limit || '0'}</p>
             </div>
             <div className="p-6 transition-all bg-white rounded-lg shadow-md hover:shadow-lg">
               <h2 className="text-lg font-semibold">Days Remaining</h2>
-              <p className="text-xl font-medium">{messageData.days_remaining || 'N/A'}</p>
+              <p className="text-xl font-medium">{messageData.days_remaining || '0'}</p>
             </div>
             <div className="p-6 transition-all bg-white rounded-lg shadow-md hover:shadow-lg">
               <h2 className="text-lg font-semibold">Messages Used</h2>
-              <p className="text-xl font-medium">{messageData.messages_used || 'N/A'}</p>
+              <p className="text-xl font-medium">{messageData.messages_used || '0'}</p>
             </div>
             <div className="p-6 transition-all bg-white rounded-lg shadow-md hover:shadow-lg">
               <h2 className="text-lg font-semibold">Messages Remaining</h2>
-              <p className="text-xl font-medium">{messageData.messages_remaining || 'N/A'}</p>
+              <p className="text-xl font-medium">{messageData.messages_remaining || '0'}</p>
             </div>
           </div>
         )}

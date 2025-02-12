@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Navbar from '../Components/Navbar/Navbar';
 import { GiLargePaintBrush } from "react-icons/gi";
 
@@ -7,6 +7,8 @@ export default function Playground() {
   const [input, setInput] = useState('');
   const [systemPrompt, setSystemPrompt] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [botMessage, setBotMessage] = useState(""); // For typing effect
+  const [isTyping, setIsTyping] = useState(false); // Controls typing animation
 
   const handleSendMessage = async () => {
     const token = localStorage.getItem('token');
@@ -18,6 +20,8 @@ export default function Playground() {
 
       try {
         setIsLoading(true);
+        setIsTyping(true); // Start typing effect
+
         const response = await fetch('https://wishchat.goodwish.com.np/api/query/', {
           method: 'POST',
           headers: {
@@ -28,15 +32,14 @@ export default function Playground() {
         });
 
         const data = await response.json();
-        setMessages((prevMessages) => [
-          ...prevMessages,
-          { text: data.response, sender: 'bot' },
-        ]);
+        simulateTypingEffect(data.response); // Start the typing effect
+
       } catch (error) {
         setMessages((prevMessages) => [
           ...prevMessages,
           { text: 'Error fetching response. Please try again.', sender: 'bot' },
         ]);
+        setIsTyping(false);
       } finally {
         setIsLoading(false);
       }
@@ -67,32 +70,35 @@ export default function Playground() {
       }
     }
   };
-
-  const renderMessageText = (text) => {
-    const urlRegex = /(https?:\/\/[^\s]+)/g;
-    const parts = text.split(urlRegex);
-
-    return parts.map((part, index) =>
-      urlRegex.test(part) ? (
-        <a
-          key={index}
-          href={part}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-blue-600 underline hover:text-blue-800"
-        >
-          {part}
-        </a>
-      ) : (
-        part
-      )
-    );
+  const simulateTypingEffect = (fullText) => {
+    setBotMessage(""); // Reset message
+    setIsTyping(true);
+    
+    let index = 0;
+    let tempMessage = "";
+  
+    const interval = setInterval(() => {
+      if (index < fullText.length) {
+        tempMessage += fullText[index];
+        setBotMessage(tempMessage); // Update bot message progressively
+        index++;
+      } else {
+        clearInterval(interval);
+        setMessages((prevMessages) => [
+          ...prevMessages,
+          { text: fullText, sender: 'bot' },
+        ]);
+        setBotMessage(""); // Clear the temporary message
+        setIsTyping(false); // Stop typing animation
+      }
+    }, 20); // Adjust the speed of typing effect
   };
+  
 
   return (
     <>
       <Navbar />
-      <div      style={{ fontFamily: "Georgia" }} className="flex flex-col items-center justify-start min-h-screen px-4 pt-3 pb-8 bg-gray-50">
+      <div style={{ fontFamily: "Georgia" }} className="flex flex-col items-center justify-start min-h-screen px-4 pt-3 pb-8 bg-gray-50">
         <div className="grid w-full max-w-full grid-cols-12 gap-6">
           {/* System Prompt Section */}
           <div className="flex flex-col items-start h-full col-span-12 p-6 transition-shadow bg-white border border-gray-200 shadow-xl shadow-black lg:col-span-3 rounded-xl hover:shadow-xl hover:shadow-black">
@@ -114,7 +120,7 @@ export default function Playground() {
           </div>
 
           {/* Chat Section */}
-          <div className="shadow-black shadow-xl col-span-12 lg:col-span-9 flex flex-col h-[calc(100vh-150px)] bg-white border border-gray-200 rounded-xl  hover:shadow-xl hover:shadow-black transition-shadow">
+          <div className="shadow-black shadow-xl col-span-12 lg:col-span-9 flex flex-col h-[calc(100vh-150px)] bg-white border border-gray-200 rounded-xl hover:shadow-xl hover:shadow-black transition-shadow">
             {/* Chat Header */}
             <div className="flex items-center justify-end px-4 py-3 bg-gray-100 border-b border-gray-200 rounded-t-lg">
               <button
@@ -139,12 +145,23 @@ export default function Playground() {
                         : 'bg-gradient-to-r from-gray-200 to-gray-100 text-gray-800'
                     }`}
                   >
-                    {renderMessageText(msg.text)}
+                    {msg.text}
                   </div>
                 </div>
               ))}
-              {isLoading && (
-                <div className="text-gray-500 animate-pulse">Bot is typing...</div>
+
+              {isTyping && (
+                <div className="flex justify-start">
+                  <div className="max-w-lg p-4 text-gray-800 bg-gray-200 rounded-lg shadow-md">
+                    {botMessage || (
+                      <div className="flex space-x-1">
+                        <span className="bg-gray-500 dot"></span>
+                        <span className="bg-gray-500 dot"></span>
+                        <span className="bg-gray-500 dot"></span>
+                      </div>
+                    )}
+                  </div>
+                </div>
               )}
             </div>
 
@@ -173,6 +190,38 @@ export default function Playground() {
           </div>
         </div>
       </div>
+      <style jsx>{`
+      .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  animation: bounce 1.4s infinite ease-in-out both;
+}
+
+.dot:nth-child(1) {
+  animation-delay: -0.32s;
+}
+
+.dot:nth-child(2) {
+  animation-delay: -0.16s;
+}
+
+.dot:nth-child(3) {
+  animation-delay: 0;
+}
+
+@keyframes bounce {
+  0%, 80%, 100% {
+    transform: scale(0);
+    opacity: 0.3;
+  }
+  40% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+      `}</style>
     </>
   );
 }

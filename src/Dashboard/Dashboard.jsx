@@ -11,6 +11,7 @@ function Dashboard() {
     const [hasActiveChatbot, setHasActiveChatbot] = useState(false);
 
     const companyName = localStorage.getItem("companyname");
+    console.log(companyName);
     const pic = localStorage.getItem("Picture");
 
     useEffect(() => {
