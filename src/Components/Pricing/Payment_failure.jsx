@@ -12,13 +12,14 @@ export default function PaymentFailure() {
         if (encodedData) {
             // Get the API key from local storage or state
             const apiKey = localStorage.getItem('apiKey'); // Replace with your logic to get the API key
-
+            const token = localStorage.getItem('token');
             // Send the encoded data to the backend
             fetch('https://wishchat.goodwish.com.np/api/payment-success', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'X-API-KEY': apiKey, // Include the API key in the headers
+                    Authorization: `Token ${token}`,
                 },
                 body: JSON.stringify({ data: encodedData }),
             })
