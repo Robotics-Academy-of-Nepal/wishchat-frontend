@@ -73,25 +73,31 @@ export default function Playground() {
   const simulateTypingEffect = (fullText) => {
     setBotMessage(""); // Reset message
     setIsTyping(true);
-    
+  
+    // Format response: Convert **text** to <b>text</b>, \n to <br />, and remove any [doc1] references
+    let formattedText = fullText
+      .replace(/\*\*(.*?)\*\*/g, "<b>$1</b>") // Convert **text** to <b>text</b>
+      .replace(/\n/g, "<br />")               // Replace \n with <br />
+      .replace(/\[doc1\]/g, "");              // Remove [doc1]
+  
     let index = 0;
     let tempMessage = "";
   
     const interval = setInterval(() => {
-      if (index < fullText.length) {
-        tempMessage += fullText[index];
+      if (index < formattedText.length) {
+        tempMessage += formattedText[index];
         setBotMessage(tempMessage); // Update bot message progressively
         index++;
       } else {
         clearInterval(interval);
         setMessages((prevMessages) => [
           ...prevMessages,
-          { text: fullText, sender: 'bot' },
+          { text: formattedText, sender: "bot" },
         ]);
         setBotMessage(""); // Clear the temporary message
         setIsTyping(false); // Stop typing animation
       }
-    }, 20); // Adjust the speed of typing effect
+    }, 10); // Adjust the speed of typing effect
   };
   
 
@@ -134,20 +140,24 @@ export default function Playground() {
             {/* Chat Messages */}
             <div className="flex-1 p-4 space-y-4 overflow-y-auto bg-gray-50">
               {messages.map((msg, index) => (
-                <div
-                  key={index}
-                  className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
-                >
-                  <div
-                    className={`max-w-lg p-4 rounded-lg shadow-md transition-all ${
-                      msg.sender === 'user'
-                        ? 'bg-gradient-to-r from-blue-600 to-blue-500 text-white'
-                        : 'bg-gradient-to-r from-gray-200 to-gray-100 text-gray-800'
-                    }`}
-                  >
-                    {msg.text}
-                  </div>
-                </div>
+         <div
+         key={index}
+         className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
+       >
+         <div
+           className={`max-w-lg p-4 rounded-lg shadow-md transition-all ${
+             msg.sender === 'user'
+               ? 'bg-gradient-to-r from-blue-600 to-blue-500 text-white'
+               : 'bg-gradient-to-r from-gray-200 to-gray-100 text-gray-800'
+           }`}
+         >
+           {/* Render the bot message with HTML formatting */}
+           <div dangerouslySetInnerHTML={{ __html: msg.text }} />
+         </div>
+       </div>
+       
+           
+            
               ))}
 
               {isTyping && (

@@ -19,7 +19,7 @@ function PaymentSuccess() {
             const token = localStorage.getItem('token');
             
             // Send the encoded data to the backend
-            fetch('https://wishchat.goodwish.com.np/api/payment-success', {
+            fetch('https://wishchat.goodwish.com.np/api/payment-success/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

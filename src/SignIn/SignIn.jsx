@@ -9,29 +9,7 @@ function SignIn() {
     const [message, setMessage] = useState('');
     const [data, setData] = useState(null);
 
-    useEffect(() => {
-        localStorage.removeItem('has_active_chatbot');
-        localStorage.removeItem('filename');
-        localStorage.removeItem('companyname');
-        
-        const fetchData = async () => {
-            try {
-                const response = await axios.get('https://wishchat.goodwish.com.np/auth/fetch-data/');
-                setData(response.data);
-                localStorage.setItem('has_active_chatbot', JSON.stringify(response.data.has_active_chatbot));
-                localStorage.setItem('filename', response.data.filename);
-                localStorage.setItem('companyname', response.data.company_name);
-            } catch (error) {
-                console.error("Error fetching data:", error);
-            }
-        };
-
-        fetchData(); // Initial fetch
-        const interval = setInterval(fetchData, 1000); // Fetch every second
-
-        return () => clearInterval(interval); // Cleanup interval on unmount
-    }, []);
-
+ 
     const handleSubmit = (e) => {
         e.preventDefault();
     };

@@ -158,12 +158,12 @@ const Upload = () => {
             >
               uploaded
             </li>
-            <li
+            {/* <li
               className={`cursor-pointer p-3 rounded-lg text-center text-lg ${activeSection === 'mainquestion' ? 'bg-blue-500 text-white' : 'text-gray-700 hover:bg-gray-100'}`}
               onClick={() => setActiveSection('mainquestion')}
             >
               Main Question
-            </li>
+            </li> */}
           </ul>
         </div>
 
