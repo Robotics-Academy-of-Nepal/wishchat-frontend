@@ -17,7 +17,7 @@ function Company() {
 
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch('https://wishchat.goodwish.com.np/auth/update-company/', {
+            const response = await fetch(' http://192.168.1.29:8000/auth/update-company/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

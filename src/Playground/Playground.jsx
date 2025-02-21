@@ -22,7 +22,7 @@ export default function Playground() {
         setIsLoading(true);
         setIsTyping(true); // Start typing effect
 
-        const response = await fetch('https://wishchat.goodwish.com.np/api/query/', {
+        const response = await fetch(' http://192.168.1.29:8000/api/query/', {
           method: 'POST',
           headers: {
             'Authorization': `Token ${token}`,
@@ -54,7 +54,7 @@ export default function Playground() {
     const token = localStorage.getItem('token');
     if (systemPrompt.trim()) {
       try {
-        const response = await fetch('https://wishchat.goodwish.com.np/api/apply-changes/', {
+        const response = await fetch(' http://192.168.1.29:8000/api/apply-changes/', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

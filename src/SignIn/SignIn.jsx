@@ -52,7 +52,7 @@ function SignIn() {
                     <div className="mt-6">
                         <GoogleLogin
                             onSuccess={(credentialResponse) => {
-                                axios.post("https://wishchat.goodwish.com.np/auth/google-login/", {
+                                axios.post(" http://192.168.1.29:8000/auth/google-login/", {
                                     auth_token: credentialResponse.credential,
                                 })
                                 .then((response) => handleLoginSuccess(response))

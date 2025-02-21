@@ -46,7 +46,7 @@ const Chatbot: React.FC<ChatbotProps> = ({ apikey }) => {
       setMessages([...newMessages, typingMessage]);
 
       try {
-        const response = await fetch("https://wishchat.goodwish.com.np/api/chat/", {
+        const response = await fetch(" http://192.168.1.29:8000/api/chat/", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
