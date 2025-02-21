@@ -1,164 +1,121 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Plus, FileIcon, Trash2 } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Trash2 } from 'lucide-react';
 import Navbar from '../Components/Navbar/Navbar';
-import QNA from './QNA';
-import TextUpload from './Textupload';
-import styles from './upload.module.css';
 
 const Uploaded = () => {
-  const navigate = useNavigate();
-  const [activeSection, setActiveSection] = useState('uploadFiles');
-  const [trainedFiles, setTrainedFiles] = useState([]);
-  const [uploadedFile, setUploadedFile] = useState(null);
-  const [isTraining, setIsTraining] = useState(false);
-  const [progress, setProgress] = useState(0);
-  const [existingFile, setExistingFile] = useState(localStorage.getItem('filename') || null);
-  const [showConfirmMessage, setShowConfirmMessage] = useState(false);
-  const [isConfirmed, setIsConfirmed] = useState(false)
+  const [fileList, setFileList] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // Handle file upload
-  const handleFileUpload = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      const fileData = {
-        file,
-        name: file.name,
-        date: new Date().toISOString().split('T')[0],
-      };
-      setUploadedFile(fileData);
-      setTrainedFiles([fileData]);
-    }
-  };
+  useEffect(() => {
+    fetchFiles();
+  }, []);
 
-
-  const handleDeleteExistingFile = async () => {
- 
-      try {
-        const token = localStorage.getItem('token');
-        const response = await fetch('https://wishchat.goodwish.com.np/api/delete/', {
-          method: 'DELETE',
-          headers: {
-            Authorization: `Token ${token}`,
-          },
-        });
-
-        if (response.status === 204) {
-          window.location.reload();
-          localStorage.setItem('has_active_chatbot', JSON.stringify(false));
-          localStorage.setItem('filename', '');
-          setExistingFile(null);
-          setTrainedFiles([]);
-          setUploadedFile(null);
-        } else {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-      } catch (error) {
-        console.error('Error deleting file:', error);
-      }
-  
-  };
-
-
-
-  // Simulate the training progress
-  const simulateProgress = () => {
-    setProgress(0);
-    const interval = setInterval(() => {
-      setProgress((prev) => {
-        if (prev >= 100) {
-          clearInterval(interval);
-          return 100;
-        }
-        return prev + 2;
-      });
-    }, 200);
-    return interval;
-  };
-
-  // Handle training the chatbot
-  const handleTrainChatbot = async () => {
-    if (existingFile) return;
-
+  // Fetch files from API
+  const fetchFiles = async () => {
     try {
-      setIsTraining(true);
-      const progressInterval = simulateProgress();
+      setLoading(true);
+      setError(null);
 
       const token = localStorage.getItem('token');
-      if (!token) {
-        throw new Error('No token found');
-      }
+      if (!token) throw new Error('No token found');
 
-      const formData = new FormData();
-      trainedFiles.forEach((fileObj) => {
-        formData.append('file', fileObj.file);
-        formData.append('filename', fileObj.name);
+      const response = await fetch('http://192.168.1.29:8000/api/documents/', {
+        method: 'GET',
+        headers: { Authorization: `Token ${token}` },
       });
 
-      const response = await fetch('https://wishchat.goodwish.com.np/api/upload/', {
-        method: 'POST',
-        headers: {
-          Authorization: `Token ${token}`,
-        },
-        body: formData,
-      });
+      if (!response.ok) throw new Error(`Error fetching files: ${response.statusText}`);
 
-  
-
-      clearInterval(progressInterval);
-      setProgress(100);
-      setTimeout(() => {
-        setIsTraining(false);
-        setProgress(0);
-      }, 1000);
+      const data = await response.json();
+      setFileList(data.documents || []); // Extract documents array
     } catch (error) {
-      console.error('Error uploading files:', error);
-      setIsTraining(false);
-      setProgress(0);
+      setError(error.message);
+      console.error('Error fetching files:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const file = localStorage.getItem('filename');
-  console.log(file); 
+  // Delete a single file
+  const handleDeleteFile = async (fileId) => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) throw new Error('No token found');
+
+      const response = await fetch(`http://192.168.1.29:8000/api/documents/delete/${fileId}/`, {
+        method: 'DELETE',
+        headers: { Authorization: `Token ${token}` },
+      });
+
+      if (!response.ok) throw new Error(`Error deleting file: ${response.statusText}`);
+
+      // Update UI after deletion
+      setFileList(fileList.filter(file => file.id !== fileId));
+    } catch (error) {
+      console.error('Error deleting file:', error);
+    }
+  };
+
+  // Delete all files
+  const handleDeleteAllFiles = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) throw new Error('No token found');
+
+      const response = await fetch('http://192.168.1.29:8000/api/documents/delete/', {
+        method: 'DELETE',
+        headers: { Authorization: `Token ${token}` },
+      });
+
+      if (!response.ok) throw new Error(`Error deleting all files: ${response.statusText}`);
+
+      // Clear file list after successful deletion
+      setFileList([]);
+    } catch (error) {
+      console.error('Error deleting all files:', error);
+    }
+  };
+
   return (
     <div>
-    
-    {(uploadedFile || existingFile) ? (
-  <div className='flex items-center justify-center md:h-[500px]'style={{ fontFamily: "Georgia" }}>
-    <div className="p-6 mt-6 transition-shadow duration-300 ease-in-out bg-white rounded-lg shadow-md shadow-black hover:shadow-lg hover:shadow-black">
-      <p className="font-medium text-gray-800">
-        {existingFile ? (
-          <div className='flex items-center justify-center gap-[100px] text-3xl'>
-            <span>
-              <span className="text-gray-600"    style={{ cursor: "not-allowed", padding: "20px", backgroundColor: "#f0f0f0" }}>Uploaded File: </span>
-              <span className="font-semibold text-gray-900">{existingFile}</span>
-            </span>
-            <Trash2
-              className="ml-2 text-red-500 transition-colors duration-200 ease-in-out cursor-pointer hover:text-red-600"
-              onClick={handleDeleteExistingFile}
-            />
-    
-          </div>
-        ) : (
+
+      <div className="p-6">
+        <h2 className="mb-4 text-2xl font-bold">Uploaded Files</h2>
+
+        {loading ? (
+          <p>Loading files...</p>
+        ) : error ? (
+          <p className="text-red-500">{error}</p>
+        ) : fileList.length > 0 ? (
           <>
+            <ul className="p-4 bg-white rounded-lg shadow-md">
+              {fileList.map(({ id, filename, uploaded_at }) => (
+                <li key={id} className="flex items-center justify-between p-2 border-b">
+                  <div>
+                    <p className="font-semibold">{filename}</p>
+                    {/* <p className="text-sm text-gray-500">Uploaded: {new Date(uploaded_at).toLocaleString()}</p> */}
+                  </div>
+                  <Trash2
+                    className="text-red-500 cursor-pointer hover:text-red-600"
+                    onClick={() => handleDeleteFile(id)}
+                  />
+                </li>
+              ))}
+            </ul>
+            <button
+              onClick={handleDeleteAllFiles}
+              className="px-4 py-2 mt-4 text-white bg-red-600 rounded-md hover:bg-red-700"
+            >
+              Delete All Files
+            </button>
           </>
+        ) : (
+          <p>No files uploaded yet.</p>
         )}
-      </p>
+      </div>
     </div>
-  </div>
-) : (
-<div className='flex items-center justify-center text-center md:h-[600px]'>
-  <p className="p-2 text-xl text-black bg-white rounded-[10px] shadow-md shadow-black" style={{ fontFamily: "Georgia" }}>
-    No file uploaded yet
-  </p>
-</div>
-
-
- 
-)}
-
-    </div>
-  )
-}
+  );
+};
 
 export default Uploaded;

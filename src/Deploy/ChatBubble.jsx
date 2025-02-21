@@ -5,12 +5,7 @@ import logo from "../assets/wishchat-logo.png";
 import bot from "../assets/bot.png";
 import user from "../assets/user.png";
 
-import productImage from "../assets/back.png";
-import supportImage from "../assets/full.png";
-import orderImage from "../assets/web.png";
-
 import { debounce } from "lodash"; // Importing lodash debounce function
-import { data } from "react-router-dom";
 
 export default function Chatbot({ apikey }) {
   const [isChatbotVisible, setIsChatbotVisible] = useState(false);
@@ -40,30 +35,9 @@ export default function Chatbot({ apikey }) {
     if (isChatbotVisible && messages.length === 0) {
       setMessages([
         {
-          text: "Hi there! How can I help you today? Choose a quick option:",
+          text: "Hi there! How can I help you today?",
           sender: "bot",
           isGreeting: true,
-        },
-        {
-          text: "Hello",
-          sender: "bot",
-          isCard: true,
-          cardType: "product",
-          image: productImage,
-        },
-        {
-          text: "Hi",
-          sender: "bot",
-          isCard: true,
-          cardType: "support",
-          image: supportImage,
-        },
-        {
-          text: "Bye",
-          sender: "bot",
-          isCard: true,
-          cardType: "order",
-          image: orderImage,
         },
       ]);
     }
@@ -95,7 +69,7 @@ export default function Chatbot({ apikey }) {
       setMessages([...newMessages, typingMessage]);
 
       try {
-        const response = await fetch("https://wishchat.goodwish.com.np/api/chat/", {
+        const response = await fetch(" http://192.168.1.29:8000/api/chat/", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -111,9 +85,7 @@ export default function Chatbot({ apikey }) {
         }
 
         const data = await response.json();
-              const botResponse = data.response;
-
-    
+        const botResponse = data.response;
 
         setMessages([...newMessages, { text: botResponse, sender: "bot" }]);
       } catch (error) {
@@ -142,7 +114,7 @@ export default function Chatbot({ apikey }) {
         setMessages([...newMessages, typingMessage]);
 
         try {
-          const response = await fetch("https://wishchat.goodwish.com.np/api/chat/", {
+          const response = await fetch(" http://192.168.1.29:8000/api/chat/", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -176,40 +148,6 @@ export default function Chatbot({ apikey }) {
     [input, messages, isLoading, apikey]
   );
 
-  const handleCardClick = (cardType) => {
-    let userMessage = "";
-    let botResponse = "";
-
-    // Handle the card's action based on the selected card type
-    switch (cardType) {
-      case "product":
-        userMessage = "Get Product Info";
-        botResponse = "Here is the product information you're looking for...";
-        break;
-      case "support":
-        userMessage = "Support Inquiry";
-        botResponse = "How can I assist you with your support query?";
-        break;
-      case "order":
-        userMessage = "Check Order Status";
-        botResponse = "Please provide your order ID to check the status.";
-        break;
-      default:
-        userMessage = "Unknown option selected.";
-        botResponse = "Please choose a valid option.";
-    }
-
-    // Remove the greeting and the cards, then display user message and bot response
-    const filteredMessages = messages.filter(
-      (message) => !message.isCard && !message.isGreeting
-    );
-    setMessages([
-      ...filteredMessages,
-      { text: userMessage, sender: "user" },
-      { text: botResponse, sender: "bot" },
-    ]);
-  };
-
   const renderMessageText = (text, isTyping) => {
     if (isTyping) {
       return (
@@ -220,36 +158,10 @@ export default function Chatbot({ apikey }) {
         </span>
       );
     }
-  
+
     // Remove unwanted references like [doc1]
     const cleanedText = text.replace(/\[doc1\]/g, "");
 
-console.log(data);
-
-    const simulateTypingEffect = (fullText) => {
-      setBotMessage(""); // Reset message
-      setIsTyping(true);
-      
-      let index = 0;
-      let tempMessage = "";
-    
-      const interval = setInterval(() => {
-        if (index < fullText.length) {
-          tempMessage += fullText[index];
-          setBotMessage(tempMessage); // Update bot message progressively
-          index++;
-        } else {
-          clearInterval(interval);
-          setMessages((prevMessages) => [
-            ...prevMessages,
-            { text: fullText, sender: 'bot' },
-          ]);
-          setBotMessage(""); // Clear the temporary message
-          setIsTyping(false); // Stop typing animation
-        }
-      }, 20); // Adjust the speed of typing effect
-    }
-  
     return (
       <div className="whitespace-pre-line">
         {cleanedText.split("\n").map((line, index) => (
@@ -269,13 +181,6 @@ console.log(data);
       </div>
     );
   };
-  ;
-  
-  
-  
-  
-  
-  
 
   // Save chat history to localStorage
   useEffect(() => {
@@ -342,25 +247,9 @@ console.log(data);
                     <img src={bot} alt="Bot" className="w-10 h-10 mr-2 rounded-full" />
                   )}
                   <div
-                    className={`p-2 rounded-lg shadow-md ${
-                      message.sender === "user" ? "bg-blue-400 text-white" : "bg-gray-200 text-black"
-                    } max-w-[70%] break-words`}
+                    className={`p-2 rounded-lg shadow-md ${message.sender === "user" ? "bg-blue-400 text-white" : "bg-gray-200 text-black"} max-w-[70%] break-words`}
                   >
-                    {message.isCard ? (
-                      <div
-                        onClick={() => handleCardClick(message.cardType)}
-                        className="flex items-center p-3 space-x-3 transition-all bg-blue-100 rounded-lg shadow-lg cursor-pointer hover:bg-blue-200"
-                      >
-                        <img
-                          src={message.image}
-                          alt={message.cardType}
-                          className="w-12 h-12 rounded-full"
-                        />
-                        <span>{message.text}</span>
-                      </div>
-                    ) : (
-                      renderMessageText(message.text, message.isTyping)
-                    )}
+                    {renderMessageText(message.text, message.isTyping)}
                   </div>
                   {message.sender === "user" && (
                     <img src={user} alt="User" className="w-10 h-10 ml-2 rounded-full" />
@@ -383,9 +272,7 @@ console.log(data);
               <button
                 type="button"
                 disabled={isLoading}
-                className={`p-3 rounded-full text-white shadow-lg ${
-                  isLoading ? "bg-gray-400 cursor-not-allowed" : "bg-blue-500 hover:scale-105"
-                }`}
+                className={`p-3 rounded-full text-white shadow-lg ${isLoading ? "bg-gray-400 cursor-not-allowed" : "bg-blue-500 hover:scale-105"}`}
                 onClick={debouncedHandleSendMessage}
               >
                 <IoSend />

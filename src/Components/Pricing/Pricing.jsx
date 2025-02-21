@@ -77,8 +77,8 @@ export default function Pricing() {
       product_code: "EPAYTEST",
       product_service_charge: "0",
       product_delivery_charge: "0",
-      success_url: "https://wishchat.goodwish.com.np/api/payment-success",
-      failure_url: "https://wishchat.goodwish.com.np/api/payment-failure",
+      success_url: "https://537vg0mp-5173.inc1.devtunnels.ms/payment-success/",
+      failure_url: "https://537vg0mp-5173.inc1.devtunnels.ms/payment-faliure/",
       signed_field_names: "total_amount,transaction_uuid,product_code",
     };
 

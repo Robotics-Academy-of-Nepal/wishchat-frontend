@@ -37,7 +37,7 @@ export default function Whatshapp() {
     
     // Send data to server
     try {
-      const response = await fetch('https://wishchat.goodwish.com.np/auth/whatsapp-credentials/', {
+      const response = await fetch(' http://192.168.1.29:8000/auth/whatsapp-credentials/', {
         method: 'POST',
         headers: {
             'Authorization': `Token ${token}`,

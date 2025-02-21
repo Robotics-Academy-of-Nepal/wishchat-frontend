@@ -16,7 +16,7 @@ export default function Profile() {
     const handleLogout = async () => {
         try {
             const token = localStorage.getItem('token');
-            await axios.post('https://wishchat.goodwish.com.np/auth/logout/', {}, {
+            await axios.post(' http://192.168.1.29:8000/auth/logout/', {}, {
                 headers: { 'Authorization': `Token ${token}` }
             });
             localStorage.clear();
